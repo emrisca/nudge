@@ -7,8 +7,7 @@ public struct UpdateSettingsCard: View {
     @Environment(\.nudgePalette) private var palette
     @ObservedObject var updater: UpdateManager
 
-    @MainActor
-    public init(updater: UpdateManager = .shared) {
+    public init(updater: UpdateManager) {
         self.updater = updater
     }
 
@@ -433,8 +432,7 @@ public struct PopoverUpdateBanner: View {
     @Environment(\.nudgePalette) private var palette
     @ObservedObject var updater: UpdateManager
 
-    @MainActor
-    public init(updater: UpdateManager = .shared) {
+    public init(updater: UpdateManager) {
         self.updater = updater
     }
 

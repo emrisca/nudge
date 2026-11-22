@@ -337,7 +337,7 @@ public struct LayoutCustomizerView: View {
                 headerTrailing: {
                     Button("Reset Defaults") {
                         manager.updateConfig {
-                            $0.menuBarComponents = [.liveIcon, .displayPercentage, .powerFlow]
+                            $0.menuBarComponents = [.liveIcon]
                             $0.popoverWidgetOrder = PopoverWidgetKind.allCases
                             $0.hiddenPopoverWidgets = []
                         }

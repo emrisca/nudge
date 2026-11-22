@@ -19,7 +19,7 @@ enum NudgeScreenshotRenderer {
         // 1. Compact Menu Bar Quick Bar — Dark Moss
         let compactDark = ZStack {
             Color(hex: 0x040302)
-            PopoverDashboardView(manager: manager, navigation: nav, initialExpanded: false)
+            PopoverDashboardView(manager: manager, navigation: nav)
                 .nudgeThemed(appearance: "dark")
                 .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
                 .shadow(color: .black.opacity(0.45), radius: 18, x: 0, y: 8)
@@ -33,7 +33,7 @@ enum NudgeScreenshotRenderer {
         // 2. Compact Menu Bar Quick Bar — Light Moss
         let compactLight = ZStack {
             Color(hex: 0xeef2ec)
-            PopoverDashboardView(manager: manager, navigation: nav, initialExpanded: false)
+            PopoverDashboardView(manager: manager, navigation: nav)
                 .nudgeThemed(appearance: "light")
                 .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
                 .shadow(color: .black.opacity(0.14), radius: 14, x: 0, y: 6)
@@ -44,21 +44,7 @@ enum NudgeScreenshotRenderer {
 
         render(compactLight, to: dirURL.appendingPathComponent("menubar-compact-light.png"))
 
-        // 3. Expanded Popover Dashboard — Dark Moss
-        let expandedDark = ZStack {
-            Color(hex: 0x040302)
-            PopoverDashboardView(manager: manager, navigation: nav, initialExpanded: true)
-                .nudgeThemed(appearance: "dark")
-                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-                .shadow(color: .black.opacity(0.45), radius: 22, x: 0, y: 10)
-                .padding(28)
-        }
-        .environment(\.colorScheme, .dark)
-        .fixedSize()
-
-        render(expandedDark, to: dirURL.appendingPathComponent("popover-expanded-dark.png"))
-
-        // 4. Full Application Dashboard — Dark Moss
+        // 3. Full Application Dashboard — Dark Moss
         let fullDark = FullDashboardView(manager: manager, navigation: nav)
             .nudgeThemed(appearance: "dark")
             .frame(width: 1120, height: 760)
@@ -74,7 +60,7 @@ enum NudgeScreenshotRenderer {
 
         render(fullLight, size: CGSize(width: 1120, height: 760), to: dirURL.appendingPathComponent("dashboard-light.png"))
 
-        print("Rendered 5 screenshots to \(outputDir)")
+        print("Rendered 4 screenshots to \(outputDir)")
     }
 
     private static func render<V: View>(_ view: V, size: CGSize? = nil, to url: URL) {

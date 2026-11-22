@@ -1,7 +1,7 @@
 import SwiftUI
 import NudgeCore
 
-/// Dynamic macOS Menu Bar label rendering user-reorderable live telemetry and state icon.
+/// Clean icon-only macOS Menu Bar label reflecting live battery and charging state.
 public struct MenuBarLabelView: View {
     @ObservedObject var manager: BatteryManager
 
@@ -10,44 +10,9 @@ public struct MenuBarLabelView: View {
     }
 
     public var body: some View {
-        let components = manager.config.menuBarComponents.isEmpty
-            ? [.liveIcon, .displayPercentage]
-            : manager.config.menuBarComponents
-        let snapshot = manager.latestSnapshot
-
-        HStack(spacing: 5) {
-            ForEach(components) { component in
-                componentView(for: component, snapshot: snapshot)
-            }
-        }
-        .font(.system(size: 12, weight: .medium))
-        .monospacedDigit()
-    }
-
-    @ViewBuilder
-    private func componentView(for component: MenuBarComponent, snapshot: BatterySnapshot) -> some View {
-        switch component {
-        case .liveIcon:
-            Image(systemName: liveIconSymbol(for: snapshot))
-                .symbolRenderingMode(.hierarchical)
-        case .displayPercentage:
-            Text("\(snapshot.displayPercentage)%")
-        case .hardwarePercentage:
-            Text(String(format: "HW %.0f%%", snapshot.rawHardwarePercentage))
-        case .temperature:
-            Text(String(format: "%.1f°C", snapshot.temperatureCelsius))
-        case .powerFlow:
-            let watts = snapshot.powerFlow.batteryWatts
-            if abs(watts) < 0.2 {
-                Text(String(format: "%.0fW", snapshot.powerFlow.systemLoadWatts))
-            } else {
-                Text(String(format: "%+.1fW", watts))
-            }
-        case .cycles:
-            Text("\(snapshot.cycleCount)c")
-        case .maxCapacity:
-            Text("\(Int(round(snapshot.healthPercentage)))%♥")
-        }
+        Image(systemName: liveIconSymbol(for: manager.latestSnapshot))
+            .symbolRenderingMode(.hierarchical)
+            .accessibilityLabel("Nudge")
     }
 
     private func liveIconSymbol(for snapshot: BatterySnapshot) -> String {

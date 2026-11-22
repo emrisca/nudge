@@ -8,7 +8,7 @@ public struct CompactQuickBarView: View {
     @Environment(\.nudgePalette) private var palette
     @ObservedObject var manager: BatteryManager
     @ObservedObject private var updater = UpdateManager.shared
-    @Binding var isExpanded: Bool
+    private let onOpenApp: () -> Void
 
     @State private var sliderLimit: Double = 80
     @State private var hoveredControl: QuickBarControl? = nil
@@ -23,9 +23,9 @@ public struct CompactQuickBarView: View {
         case exit
     }
 
-    public init(manager: BatteryManager, isExpanded: Binding<Bool>) {
+    public init(manager: BatteryManager, onOpenApp: @escaping () -> Void) {
         self.manager = manager
-        self._isExpanded = isExpanded
+        self.onOpenApp = onOpenApp
         self._sliderLimit = State(initialValue: Double(manager.config.chargeLimit))
     }
 
@@ -206,27 +206,20 @@ public struct CompactQuickBarView: View {
         let isHovered = hoveredControl == .expand
 
         return Button {
-            withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
-                isExpanded.toggle()
-            }
+            onOpenApp()
         } label: {
             QuickBarGridIcon()
                 .foregroundStyle(
-                    isExpanded
-                        ? palette.accentForeground
-                        : (palette.isDark ? palette.foreground : palette.secondaryForeground)
+                    palette.isDark ? palette.foreground : palette.secondaryForeground
                 )
                 .frame(width: 36, height: 36)
                 .background(
                     Circle()
-                        .fill(isExpanded ? palette.accent : pillSurfaceColor(hovered: isHovered))
+                        .fill(pillSurfaceColor(hovered: isHovered))
                 )
                 .overlay(
                     Circle()
-                        .strokeBorder(
-                            isExpanded ? palette.ring.opacity(0.75) : pillBorderColor(hovered: isHovered),
-                            lineWidth: 1
-                        )
+                        .strokeBorder(pillBorderColor(hovered: isHovered), lineWidth: 1)
                 )
                 .overlay(alignment: .topTrailing) {
                     if updater.hasUnignoredUpdate {
@@ -247,10 +240,10 @@ public struct CompactQuickBarView: View {
         }
         .help(
             updater.hasUnignoredUpdate
-                ? "Expand Dashboard — Update \(updater.availableRelease?.displayVersion ?? "") available"
-                : (isExpanded ? "Collapse Dashboard" : "Expand Widget Dashboard")
+                ? "Open Nudge — Update \(updater.availableRelease?.displayVersion ?? "") available"
+                : "Open Nudge"
         )
-        .accessibilityLabel(isExpanded ? "Collapse Dashboard" : "Expand Widget Dashboard")
+        .accessibilityLabel("Open Nudge")
     }
 
     private var exitButton: some View {

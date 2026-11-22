@@ -2,7 +2,7 @@
 
 A native macOS battery care, power telemetry, and charge management suite for Apple Silicon and Intel MacBooks, crafted in Swift, SwiftUI, Swift Charts, IOKit, and App Intents.
 
-Runs cleanly as a **menu-bar-only utility** (`LSUIElement = true`, hidden from the macOS Dock) with a compact quick-control pill bar, expandable widget popover, and on-demand full dashboard window.
+Runs cleanly as a **menu-bar-only utility** (`LSUIElement = true`, hidden from the macOS Dock) with an icon-only menu bar trigger, a compact quick-control pill bar, and an on-demand full dashboard window opened from the 2×2 grid button.
 
 Styled with the **Moss** design system ([tweakcn `cmmi1gb4a000204jl8c300w9a`](https://tweakcn.com/themes/cmmi1gb4a000204jl8c300w9a)): deep warm dark bark (`#070503` / `#100d08`) and crisp porcelain (`#fdfdfd`) surfaces, warm `#2f281b` hairline borders, `#495940` deep forest moss accents, sage-moss (`#AFBEA5` / `#7F956A`) controls, `1.4rem` organic corners, tabular monospaced figures, and full Light / Dark / System mode support.
 
@@ -14,29 +14,20 @@ Styled with the **Moss** design system ([tweakcn `cmmi1gb4a000204jl8c300w9a`](ht
 | :---: | :---: |
 | ![Compact Menu Bar Quick Bar — Dark Moss](docs/screenshots/menubar-compact-dark.png) | ![Compact Menu Bar Quick Bar — Light Moss](docs/screenshots/menubar-compact-light.png) |
 
-Click Nudge in the top macOS menu bar for instant one-click access to **Limit %**, **Discharge**, **Top Up**, the **2×2 Expand Grid**, a one-click **Exit** button, and the live **Charge Limit slider**.
+Click the Nudge icon in the top macOS menu bar for instant one-click access to **Limit %**, **Discharge**, **Top Up**, the **2×2 Open App button**, a one-click **Exit** button, and the live **Charge Limit slider**.
 
-### Full Dashboard & Expanded Popover
+### Full Dashboard
 
 | Full Dashboard (Dark Moss) | Full Dashboard (Light Moss) |
 | :---: | :---: |
 | ![Full Dashboard — Dark Moss](docs/screenshots/dashboard-dark.png) | ![Full Dashboard — Light Moss](docs/screenshots/dashboard-light.png) |
 
-<details>
-<summary><strong>Expanded Menu Bar Popover (Dark Moss)</strong></summary>
-
-<p align="center">
-  <img src="docs/screenshots/popover-expanded-dark.png" alt="Expanded Menu Bar Popover — Dark Moss" width="460" />
-</p>
-
-</details>
-
 ## Download & Install
 
 Grab the latest macOS installer from **[GitHub Releases](https://github.com/emrisca/nudge/releases/latest)**:
 
-- **`Nudge-1.1.0-macOS-arm64.dmg`** — Drag `Nudge.app` into `/Applications`
-- **`Nudge-1.1.0-macOS-arm64.zip`** — Portable archive
+- **`Nudge-1.1.1-macOS-arm64.dmg`** — Drag `Nudge.app` into `/Applications`
+- **`Nudge-1.1.1-macOS-arm64.zip`** — Portable archive
 - **Built-in GitHub Releases Updater** — Nudge automatically checks `emrisca/nudge` for new releases (with optional pre-release channel, SHA-256 verification against `SHA256SUMS.txt`, automatic `xattr -cr`, and one-click **Install & Relaunch**).
 
 > **First Launch (Ad-Hoc Signed Build):** This release is ad-hoc signed and not notarized with an Apple Developer license. After dragging `Nudge.app` to `/Applications`, clear the macOS Gatekeeper quarantine flag in Terminal:

@@ -324,7 +324,7 @@ public struct BatteryConfig: Codable, Sendable, Equatable {
     public var showHardwarePercentage: Bool = true
     public var catchUpMissedTasks: Bool = true
     public var preferredPowerMode: PowerMode = .normal
-    public var menuBarComponents: [MenuBarComponent] = [.liveIcon, .displayPercentage, .powerFlow]
+    public var menuBarComponents: [MenuBarComponent] = [.liveIcon]
     public var popoverWidgetOrder: [PopoverWidgetKind] = PopoverWidgetKind.allCases
     public var hiddenPopoverWidgets: [PopoverWidgetKind] = []
     public var appearancePreference: String = "system" // "system", "light", "dark"

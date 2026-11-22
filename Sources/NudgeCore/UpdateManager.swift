@@ -4,7 +4,7 @@ import CryptoKit
 // MARK: - Version & Repository Metadata
 
 public enum NudgeVersion {
-    public static let fallbackVersion = "1.1.0"
+    public static let fallbackVersion = "1.1.1"
     public static let repositoryOwner = "emrisca"
     public static let repositoryName = "nudge"
     public static let bundleIdentifier = "com.emrisca.nudge"
