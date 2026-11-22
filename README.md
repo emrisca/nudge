@@ -1,4 +1,4 @@
-# Nudge ⚡
+# Nudge 
 
 A native macOS battery care, power telemetry, and charge management suite for Apple Silicon and Intel MacBooks, crafted in Swift, SwiftUI, Swift Charts, IOKit, and App Intents.
 
