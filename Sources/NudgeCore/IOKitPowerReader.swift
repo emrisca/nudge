@@ -23,7 +23,6 @@ public final class IOKitPowerReader: @unchecked Sendable {
             let maxCap = description[kIOPSMaxCapacityKey as String] as? Int ?? 100
             let displayPct = maxCap > 0 ? Int((Double(currentCap) / Double(maxCap)) * 100.0) : currentCap
 
-            // Estimate wattages and temperature via IOKit properties
             let tempCelsius = readBatteryTemperatureIOKit()
             let cycles = readCycleCountIOKit()
 
@@ -56,15 +55,12 @@ public final class IOKitPowerReader: @unchecked Sendable {
     }
 
     private func readBatteryTemperatureIOKit() -> Double {
-        var masterPort: mach_port_t = 0
-        guard IOMasterPort(mach_port_t(MACH_PORT_NULL), &masterPort) == KERN_SUCCESS else { return 30.0 }
         let matching = IOServiceMatching("AppleSmartBattery")
-        let service = IOServiceGetMatchingService(masterPort, matching)
+        let service = IOServiceGetMatchingService(kIOMainPortDefault, matching)
         guard service != 0 else { return 30.0 }
         defer { IOObjectRelease(service) }
 
         if let temp = IORegistryEntryCreateCFProperty(service, "Temperature" as CFString, kCFAllocatorDefault, 0)?.takeRetainedValue() as? Double {
-            // AppleSmartBattery returns temp in tenths of a Kelvin or hundredths of Celsius
             if temp > 1000 {
                 return (temp / 100.0)
             } else if temp > 200 {
@@ -76,10 +72,8 @@ public final class IOKitPowerReader: @unchecked Sendable {
     }
 
     private func readCycleCountIOKit() -> Int {
-        var masterPort: mach_port_t = 0
-        guard IOMasterPort(mach_port_t(MACH_PORT_NULL), &masterPort) == KERN_SUCCESS else { return 0 }
         let matching = IOServiceMatching("AppleSmartBattery")
-        let service = IOServiceGetMatchingService(masterPort, matching)
+        let service = IOServiceGetMatchingService(kIOMainPortDefault, matching)
         guard service != 0 else { return 0 }
         defer { IOObjectRelease(service) }
 
