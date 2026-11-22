@@ -40,6 +40,7 @@ public struct NudgeTagPill: View {
 
     public enum Style {
         case primary
+        case secondary
         case accent
         case muted
         case warning
@@ -77,12 +78,14 @@ public struct NudgeTagPill: View {
         switch style {
         case .primary:
             return (palette.primary, palette.primaryForeground)
+        case .secondary:
+            return (palette.secondary, palette.secondaryForeground)
         case .accent:
             return (palette.accent, palette.accentForeground)
         case .muted:
             return (palette.muted, palette.mutedForeground)
         case .warning:
-            return (palette.warningSoft, palette.isDark ? palette.warning : Color(hex: 0x92400E))
+            return (palette.warningSoft, palette.isDark ? palette.warning : Color(hex: 0x78350F))
         case .destructive:
             return (palette.destructive, palette.destructiveForeground)
         }
@@ -99,7 +102,7 @@ public struct NudgeBrandBadge: View {
 
     public var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: size * 0.32, style: .continuous)
+            RoundedRectangle(cornerRadius: size * 0.34, style: .continuous)
                 .fill(palette.primary)
                 .frame(width: size, height: size)
             Image(systemName: "bolt.fill")

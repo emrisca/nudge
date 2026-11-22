@@ -19,7 +19,7 @@ public struct SettingsView: View {
             // Appearance Theme Switcher
             NudgeCard(
                 title: "Appearance & Theme",
-                subtitle: "Light Green tweakcn Design System · System / Light / Dark",
+                subtitle: "Moss tweakcn Design System · System / Light / Dark",
                 symbol: "paintbrush.fill"
             ) {
                 HStack(spacing: 10) {
@@ -141,7 +141,7 @@ public struct SettingsView: View {
                             Spacer()
                             Text("-\(config.sailingDeadband)% (Resume at \(max(20, config.chargeLimit - config.sailingDeadband))%)")
                                 .nudgeMetricFont(size: 12, weight: .semibold)
-                                .foregroundStyle(palette.accentForeground)
+                                .foregroundStyle(palette.highlightText)
                         }
 
                         Slider(
@@ -187,27 +187,8 @@ public struct SettingsView: View {
             manager.updateConfig { $0.appearancePreference = mode.rawValue }
         } label: {
             VStack(alignment: .leading, spacing: 10) {
-                // Visual mini-preview of theme surface + neon primary pill
-                HStack(spacing: 4) {
-                    RoundedRectangle(cornerRadius: 5, style: .continuous)
-                        .fill(mode == .dark ? Color(hex: 0x020617) : Color(hex: 0xFBFCF8))
-                        .frame(height: 26)
-                        .overlay(
-                            HStack(spacing: 4) {
-                                RoundedRectangle(cornerRadius: 3)
-                                    .fill(Color(hex: 0xAFF33E))
-                                    .frame(width: 18, height: 10)
-                                RoundedRectangle(cornerRadius: 3)
-                                    .fill(mode == .dark ? Color(hex: 0x1E293B) : Color(hex: 0xE2E8F0))
-                                    .frame(height: 10)
-                            }
-                            .padding(.horizontal, 6)
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 5, style: .continuous)
-                                .strokeBorder(palette.border, lineWidth: 1)
-                        )
-                }
+                // Visual mini-preview of Moss theme surface + sage primary pill
+                themePreviewSwatch(for: mode)
 
                 HStack(spacing: 6) {
                     Image(systemName: mode.symbol)
@@ -232,10 +213,72 @@ public struct SettingsView: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                    .strokeBorder(isSelected ? palette.primary : palette.border, lineWidth: 1)
+                    .strokeBorder(isSelected ? palette.ring : palette.border, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private func themePreviewSwatch(for mode: NudgeAppearance) -> some View {
+        switch mode {
+        case .system:
+            HStack(spacing: 0) {
+                ZStack {
+                    NudgePalette.light.background
+                    HStack(spacing: 3) {
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(NudgePalette.light.primary)
+                            .frame(width: 12, height: 10)
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(NudgePalette.light.secondary)
+                            .frame(height: 10)
+                    }
+                    .padding(.horizontal, 5)
+                }
+                ZStack {
+                    NudgePalette.dark.background
+                    HStack(spacing: 3) {
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(NudgePalette.dark.primary)
+                            .frame(width: 12, height: 10)
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(NudgePalette.dark.secondary)
+                            .frame(height: 10)
+                    }
+                    .padding(.horizontal, 5)
+                }
+            }
+            .frame(height: 28)
+            .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .strokeBorder(palette.border, lineWidth: 1)
+            )
+        case .light, .dark:
+            let previewPalette = mode == .dark ? NudgePalette.dark : NudgePalette.light
+            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                .fill(previewPalette.background)
+                .frame(height: 28)
+                .overlay(
+                    HStack(spacing: 4) {
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(previewPalette.primary)
+                            .frame(width: 18, height: 10)
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(previewPalette.accent)
+                            .frame(width: 10, height: 10)
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(previewPalette.secondary)
+                            .frame(height: 10)
+                    }
+                    .padding(.horizontal, 6)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                        .strokeBorder(previewPalette.border, lineWidth: 1)
+                )
+        }
     }
 
     private func daemonMetric(title: String, value: String) -> some View {
@@ -251,7 +294,7 @@ public struct SettingsView: View {
         .padding(10)
         .background(
             RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                .fill(palette.muted.opacity(0.7))
+                .fill(palette.muted.opacity(0.75))
         )
     }
 
@@ -311,7 +354,7 @@ public struct LayoutCustomizerView: View {
                         )
                         .overlay(
                             Capsule(style: .continuous)
-                                .strokeBorder(palette.primary.opacity(0.65), lineWidth: 1.5)
+                                .strokeBorder(palette.ring, lineWidth: 1.5)
                         )
                     Spacer()
                 }
@@ -349,7 +392,7 @@ public struct LayoutCustomizerView: View {
                                 .font(.system(size: 11.5, weight: .semibold))
                                 .foregroundStyle(palette.accentForeground)
                                 .frame(width: 22, height: 22)
-                                .background(RoundedRectangle(cornerRadius: 6).fill(palette.accent))
+                                .background(RoundedRectangle(cornerRadius: 6, style: .continuous).fill(palette.accent))
 
                             Text(comp.rawValue)
                                 .font(.system(size: 12, weight: .medium))
@@ -390,7 +433,7 @@ public struct LayoutCustomizerView: View {
                         .padding(.vertical, 8)
                         .background(
                             RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                                .fill(palette.muted.opacity(0.6))
+                                .fill(palette.muted.opacity(0.65))
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
@@ -457,7 +500,7 @@ public struct LayoutCustomizerView: View {
                             .font(.system(size: 11.5, weight: .semibold))
                             .foregroundStyle(isVisible ? palette.accentForeground : palette.mutedForeground)
                             .frame(width: 22, height: 22)
-                            .background(RoundedRectangle(cornerRadius: 6).fill(isVisible ? palette.accent : palette.muted))
+                            .background(RoundedRectangle(cornerRadius: 6, style: .continuous).fill(isVisible ? palette.accent : palette.muted))
 
                         Text(kind.rawValue)
                             .font(.system(size: 12, weight: .medium))
@@ -494,7 +537,7 @@ public struct LayoutCustomizerView: View {
                                 .foregroundStyle(isVisible ? palette.primaryForeground : palette.mutedForeground)
                                 .frame(width: 26, height: 22)
                                 .background(
-                                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
                                         .fill(isVisible ? palette.primary : palette.muted)
                                 )
                         }
@@ -504,7 +547,7 @@ public struct LayoutCustomizerView: View {
                     .padding(.vertical, 8)
                     .background(
                         RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                            .fill(palette.muted.opacity(0.6))
+                            .fill(palette.muted.opacity(0.65))
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)

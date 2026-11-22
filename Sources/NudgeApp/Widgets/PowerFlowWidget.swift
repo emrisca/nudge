@@ -22,6 +22,14 @@ public struct PowerFlowWidget: View {
         return .idle
     }
 
+    private var systemNodeColor: Color {
+        palette.isDark ? palette.chart3 : palette.chart4
+    }
+
+    private var socBarColor: Color {
+        palette.isDark ? palette.chart3 : palette.chart1
+    }
+
     public var body: some View {
         NudgeCard(
             title: "Power Flow",
@@ -43,7 +51,8 @@ public struct PowerFlowWidget: View {
                         caption: snapshot.isPluggedIn ? "Max \(snapshot.adapterMaxWatts)W" : "Unplugged",
                         symbol: "powerplug.fill",
                         isActive: chargerToSystemActive,
-                        accentColor: palette.primary
+                        accentColor: palette.primary,
+                        activeSymbolColor: palette.highlightText
                     )
 
                     FlowConnector(
@@ -57,7 +66,8 @@ public struct PowerFlowWidget: View {
                         caption: "Total Draw",
                         symbol: "laptopcomputer",
                         isActive: true,
-                        accentColor: palette.chart2
+                        accentColor: systemNodeColor,
+                        activeSymbolColor: systemNodeColor
                     )
 
                     FlowConnector(
@@ -71,7 +81,8 @@ public struct PowerFlowWidget: View {
                         caption: batteryCaption,
                         symbol: batteryDirection == .forward ? "battery.100percent.bolt" : "battery.75percent",
                         isActive: batteryDirection != .idle,
-                        accentColor: batteryDirection == .forward ? palette.primary : (batteryDirection == .reverse ? palette.warning : palette.mutedForeground)
+                        accentColor: batteryDirection == .forward ? palette.primary : (batteryDirection == .reverse ? palette.warning : palette.mutedForeground),
+                        activeSymbolColor: batteryDirection == .forward ? palette.highlightText : palette.warning
                     )
                 }
 
@@ -84,19 +95,19 @@ public struct PowerFlowWidget: View {
                         label: "Apple Silicon / SoC",
                         watts: flow.socWatts,
                         fraction: flow.socWatts / denom,
-                        color: palette.chart1
+                        color: socBarColor
                     )
                     breakdownRow(
                         label: "Display & Backlight",
                         watts: flow.displayWatts,
                         fraction: flow.displayWatts / denom,
-                        color: palette.chart3
+                        color: palette.primary
                     )
                     breakdownRow(
                         label: "USB & Peripherals",
                         watts: flow.usbAndPeripheralsWatts,
                         fraction: flow.usbAndPeripheralsWatts / denom,
-                        color: palette.chart2
+                        color: palette.chart4
                     )
                 }
             }
@@ -115,21 +126,22 @@ public struct PowerFlowWidget: View {
         caption: String,
         symbol: String,
         isActive: Bool,
-        accentColor: Color
+        accentColor: Color,
+        activeSymbolColor: Color
     ) -> some View {
         VStack(spacing: 5) {
             ZStack {
-                RoundedRectangle(cornerRadius: 11, style: .continuous)
-                    .fill(isActive ? accentColor.opacity(palette.isDark ? 0.22 : 0.28) : palette.muted)
-                    .frame(width: 38, height: 38)
+                RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
+                    .fill(isActive ? accentColor.opacity(palette.isDark ? 0.20 : 0.18) : palette.muted)
+                    .frame(width: 40, height: 40)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 11, style: .continuous)
+                        RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
                             .strokeBorder(isActive ? accentColor : palette.border, lineWidth: isActive ? 1.5 : 1)
                     )
 
                 Image(systemName: symbol)
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(isActive ? (accentColor == palette.primary && !palette.isDark ? palette.primaryForeground : accentColor) : palette.mutedForeground)
+                    .foregroundStyle(isActive ? activeSymbolColor : palette.mutedForeground)
             }
 
             Text(title)
@@ -173,7 +185,7 @@ public struct PowerFlowWidget: View {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule(style: .continuous)
-                        .fill(palette.muted)
+                        .fill(palette.input)
                     Capsule(style: .continuous)
                         .fill(color)
                         .frame(width: max(4, geo.size.width * clamped))

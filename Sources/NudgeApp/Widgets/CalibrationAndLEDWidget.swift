@@ -34,7 +34,7 @@ public struct CalibrationAndLEDWidget: View {
                         Spacer()
                         Text(phaseDescription(phase))
                             .font(.system(size: 10.5, weight: .medium))
-                            .foregroundStyle(isCalibrating ? palette.accentForeground : palette.mutedForeground)
+                            .foregroundStyle(isCalibrating ? palette.highlightText : palette.mutedForeground)
                     }
 
                     HStack(spacing: 4) {
@@ -142,14 +142,14 @@ public struct CalibrationAndLEDWidget: View {
                 .font(.system(size: 9.5, weight: .medium))
                 .foregroundStyle(
                     isCurrent
-                        ? palette.primaryForeground.opacity(0.8)
-                        : palette.mutedForeground
+                        ? palette.primaryForeground.opacity(0.82)
+                        : (isCompleted ? palette.accentForeground.opacity(0.82) : palette.mutedForeground)
                 )
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 6)
         .background(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
+            RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
                 .fill(
                     isCurrent
                         ? palette.primary
@@ -157,8 +157,8 @@ public struct CalibrationAndLEDWidget: View {
                 )
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .strokeBorder(isCurrent ? palette.primary : palette.border, lineWidth: 1)
+            RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
+                .strokeBorder(isCurrent ? palette.ring : palette.border, lineWidth: 1)
         )
     }
 
@@ -201,14 +201,15 @@ public struct CalibrationAndLEDWidget: View {
     private func ledPreviewColor(_ state: MagSafeLEDState) -> Color {
         switch state {
         case .systemDefault: return palette.mutedForeground
-        case .green: return Color(hex: 0x22C55E)
-        case .orange, .blinkingOrange: return Color(hex: 0xF97316)
-        case .off: return Color.gray.opacity(0.35)
+        case .green: return palette.statusPositive
+        case .orange, .blinkingOrange: return palette.warning
+        case .off: return palette.mutedForeground.opacity(0.35)
         }
     }
 }
 
 private struct MagSafeLEDDot: View {
+    @Environment(\.nudgePalette) private var palette
     let state: MagSafeLEDState
     @State private var blinkOn: Bool = true
 
@@ -229,10 +230,10 @@ private struct MagSafeLEDDot: View {
 
     private var dotColor: Color {
         switch state {
-        case .green: return Color(hex: 0x22C55E)
-        case .orange, .blinkingOrange: return Color(hex: 0xF97316)
-        case .off: return Color.gray.opacity(0.35)
-        case .systemDefault: return Color(hex: 0xAFF33E)
+        case .green: return palette.statusPositive
+        case .orange, .blinkingOrange: return palette.warning
+        case .off: return palette.mutedForeground.opacity(0.35)
+        case .systemDefault: return palette.primary
         }
     }
 }

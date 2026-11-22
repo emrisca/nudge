@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Interactive neon-green charge limit slider with visual Sailing Mode deadband and live battery marker.
+/// Interactive Moss charge limit slider with visual Sailing Mode deadband and live battery marker.
 public struct ChargeLimitSlider: View {
     @Environment(\.nudgePalette) private var palette
 
@@ -51,18 +51,18 @@ public struct ChargeLimitSlider: View {
                 ZStack(alignment: .leading) {
                     // Base Track
                     Capsule(style: .continuous)
-                        .fill(palette.muted)
+                        .fill(palette.input)
                         .frame(height: 10)
                         .overlay(
                             Capsule(style: .continuous)
                                 .strokeBorder(palette.border, lineWidth: 1)
                         )
 
-                    // Active neon-green progress fill up to target limit
+                    // Active Moss progress fill up to target limit
                     Capsule(style: .continuous)
                         .fill(
                             LinearGradient(
-                                colors: [palette.chart3.opacity(0.85), palette.primary],
+                                colors: [palette.accent, palette.primary],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
@@ -72,10 +72,10 @@ public struct ChargeLimitSlider: View {
                     // Sailing deadband visual zone
                     if sailingEnabled && deadbandWidth > 2 {
                         RoundedRectangle(cornerRadius: 4, style: .continuous)
-                            .fill(palette.isDark ? Color.black.opacity(0.32) : Color.black.opacity(0.16))
+                            .fill(palette.isDark ? Color.black.opacity(0.35) : Color.black.opacity(0.18))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 4, style: .continuous)
-                                    .strokeBorder(palette.primaryForeground.opacity(0.4), style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
+                                    .strokeBorder(palette.primaryForeground.opacity(0.55), style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
                             )
                             .frame(width: deadbandWidth, height: 10)
                             .offset(x: deadbandStartX)
@@ -83,7 +83,7 @@ public struct ChargeLimitSlider: View {
 
                     // Current battery level tick mark
                     RoundedRectangle(cornerRadius: 1.5)
-                        .fill(palette.foreground.opacity(0.7))
+                        .fill(palette.foreground.opacity(0.75))
                         .frame(width: 2.5, height: 15)
                         .offset(x: min(width - 2.5, max(0, batteryX - 1.25)))
 
@@ -95,7 +95,7 @@ public struct ChargeLimitSlider: View {
                             Circle()
                                 .strokeBorder(palette.primary, lineWidth: 3)
                         )
-                        .shadow(color: Color.black.opacity(0.18), radius: 4, y: 2)
+                        .shadow(color: palette.shadowColor, radius: 4, y: 2)
                         .offset(x: min(width - 20, max(0, limitX - 10)))
                         .animation(.easeOut(duration: 0.1), value: isDragging)
                 }

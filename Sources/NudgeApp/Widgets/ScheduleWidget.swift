@@ -81,7 +81,7 @@ public struct ScheduleWidget: View {
                     .padding(10)
                     .background(
                         RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                            .fill(palette.muted.opacity(0.6))
+                            .fill(palette.muted.opacity(0.65))
                     )
                 } else {
                     VStack(spacing: 6) {
@@ -156,11 +156,11 @@ public struct ScheduleWidget: View {
         .padding(.vertical, 8)
         .background(
             RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                .fill(palette.muted.opacity(0.55))
+                .fill(palette.muted.opacity(0.60))
         )
         .overlay(
             RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                .strokeBorder(palette.border.opacity(0.65), lineWidth: 1)
+                .strokeBorder(palette.border.opacity(0.70), lineWidth: 1)
         )
     }
 
@@ -173,14 +173,14 @@ public struct ScheduleWidget: View {
             TextField("Task Name (e.g., Morning Top Up)", text: $newName)
                 .textFieldStyle(.plain)
                 .font(.system(size: 12))
-                .padding(.horizontal, 9)
-                .padding(.vertical, 6)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 7)
                 .background(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(palette.card)
+                    RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
+                        .fill(palette.input)
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
                         .strokeBorder(palette.border, lineWidth: 1)
                 )
 
@@ -245,12 +245,12 @@ public struct ScheduleWidget: View {
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 5)
                             .background(
-                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
                                     .fill(active ? palette.primary : palette.card)
                             )
                             .overlay(
-                                RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                    .strokeBorder(active ? palette.primary : palette.border, lineWidth: 1)
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .strokeBorder(active ? palette.ring : palette.border, lineWidth: 1)
                             )
                     }
                     .buttonStyle(.plain)
@@ -297,7 +297,7 @@ public struct ScheduleWidget: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                .strokeBorder(palette.primary.opacity(0.6), lineWidth: 1)
+                .strokeBorder(palette.ring.opacity(0.75), lineWidth: 1)
         )
     }
 

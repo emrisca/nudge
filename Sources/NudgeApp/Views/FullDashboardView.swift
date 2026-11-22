@@ -38,20 +38,27 @@ public enum DashboardSection: String, CaseIterable, Identifiable {
 public struct FullDashboardView: View {
     @Environment(\.nudgePalette) private var palette
     @ObservedObject var manager: BatteryManager
+    @ObservedObject var navigation: NudgeNavigationController
 
-    @State private var selectedSection: DashboardSection = .overview
-
+    @MainActor
     public init(manager: BatteryManager) {
         self.manager = manager
+        self.navigation = .shared
+    }
+
+    public init(manager: BatteryManager, navigation: NudgeNavigationController) {
+        self.manager = manager
+        self.navigation = navigation
     }
 
     private var snapshot: BatterySnapshot { manager.latestSnapshot }
+    private var selectedSection: DashboardSection { navigation.selectedSection }
 
     public var body: some View {
         HStack(spacing: 0) {
             sidebar
             Rectangle()
-                .fill(palette.border)
+                .fill(palette.sidebarBorder)
                 .frame(width: 1)
             mainContent
         }
@@ -59,7 +66,7 @@ public struct FullDashboardView: View {
         .frame(minWidth: 920, minHeight: 640)
     }
 
-    // MARK: - Sidebar (tweakcn clean application sidebar)
+    // MARK: - Sidebar (Moss tweakcn sidebar tokens)
 
     private var sidebar: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -69,7 +76,7 @@ public struct FullDashboardView: View {
                 VStack(alignment: .leading, spacing: 1) {
                     Text("Nudge")
                         .nudgeHeadingFont(size: 16, weight: .bold)
-                        .foregroundStyle(palette.foreground)
+                        .foregroundStyle(palette.sidebarForeground)
                     Text("Battery Intelligence")
                         .font(.system(size: 10.5, weight: .medium))
                         .foregroundStyle(palette.mutedForeground)
@@ -83,7 +90,7 @@ public struct FullDashboardView: View {
                 HStack(alignment: .firstTextBaseline) {
                     Text("\(snapshot.displayPercentage)%")
                         .nudgeMetricFont(size: 26, weight: .bold)
-                        .foregroundStyle(palette.foreground)
+                        .foregroundStyle(palette.cardForeground)
                     Spacer()
                     ChargingStateBadge(state: snapshot.state, compact: true)
                 }
@@ -107,14 +114,14 @@ public struct FullDashboardView: View {
                 .monospacedDigit()
                 .foregroundStyle(palette.mutedForeground)
             }
-            .padding(11)
+            .padding(12)
             .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(palette.background)
+                RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
+                    .fill(palette.card)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .strokeBorder(palette.border, lineWidth: 1)
+                RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
+                    .strokeBorder(palette.sidebarBorder, lineWidth: 1)
             )
 
             // Navigation Links
@@ -129,7 +136,7 @@ public struct FullDashboardView: View {
                     let isSelected = selectedSection == section
                     Button {
                         withAnimation(.easeInOut(duration: 0.14)) {
-                            selectedSection = section
+                            navigation.selectedSection = section
                         }
                     } label: {
                         HStack(spacing: 9) {
@@ -141,12 +148,16 @@ public struct FullDashboardView: View {
                                 .tracking(NudgeMetrics.tightTracking)
                             Spacer()
                         }
-                        .foregroundStyle(isSelected ? palette.primaryForeground : palette.foreground)
+                        .foregroundStyle(isSelected ? palette.sidebarAccentForeground : palette.sidebarForeground)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 8)
                         .background(
                             RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                                .fill(isSelected ? palette.primary : Color.clear)
+                                .fill(isSelected ? palette.sidebarAccent : Color.clear)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
+                                .strokeBorder(isSelected ? palette.sidebarRing.opacity(0.45) : Color.clear, lineWidth: 1)
                         )
                     }
                     .buttonStyle(.plain)
@@ -165,12 +176,12 @@ public struct FullDashboardView: View {
                         } label: {
                             Image(systemName: mode.symbol)
                                 .font(.system(size: 11, weight: .semibold))
-                                .foregroundStyle(isSelected ? palette.primaryForeground : palette.mutedForeground)
+                                .foregroundStyle(isSelected ? palette.sidebarPrimaryForeground : palette.mutedForeground)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 6)
                                 .background(
-                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                        .fill(isSelected ? palette.primary : Color.clear)
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                        .fill(isSelected ? palette.sidebarPrimary : Color.clear)
                                 )
                         }
                         .buttonStyle(.plain)
@@ -179,13 +190,17 @@ public struct FullDashboardView: View {
                 }
                 .padding(3)
                 .background(
-                    RoundedRectangle(cornerRadius: 9, style: .continuous)
-                        .fill(palette.muted)
+                    RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
+                        .fill(palette.isDark ? palette.muted : palette.sidebarAccent)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
+                        .strokeBorder(palette.sidebarBorder, lineWidth: 1)
                 )
 
                 HStack(spacing: 6) {
                     Circle()
-                        .fill(manager.daemonStatus.isConnected ? palette.chart3 : palette.warning)
+                        .fill(manager.daemonStatus.isConnected ? palette.statusPositive : palette.warning)
                         .frame(width: 7, height: 7)
                     Text(manager.daemonStatus.isConnected ? "Helper Connected" : "Helper Offline")
                         .font(.system(size: 10.5, weight: .medium))
@@ -199,8 +214,8 @@ public struct FullDashboardView: View {
             }
         }
         .padding(16)
-        .frame(width: 236)
-        .background(palette.card)
+        .frame(width: 240)
+        .background(palette.sidebar)
     }
 
     // MARK: - Main Content Area
@@ -224,7 +239,7 @@ public struct FullDashboardView: View {
                     NudgeTagPill(
                         manager.currentPowerMode.rawValue,
                         symbol: "bolt.circle",
-                        style: .muted
+                        style: .secondary
                     )
 
                     Button {
@@ -399,7 +414,7 @@ public struct FullDashboardView: View {
                             .foregroundStyle(palette.accentForeground)
                             .frame(width: 26, height: 26)
                             .background(
-                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
                                     .fill(palette.accent)
                             )
 
@@ -424,7 +439,7 @@ public struct FullDashboardView: View {
                     .padding(.vertical, 7)
                     .background(
                         RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                            .fill(palette.muted.opacity(0.55))
+                            .fill(palette.muted.opacity(0.65))
                     )
                 }
             }
@@ -432,7 +447,7 @@ public struct FullDashboardView: View {
     }
 
     private func kpiTile(title: String, value: String, detail: String, symbol: String, accent: Bool = false) -> some View {
-        NudgeCard(padding: 13) {
+        NudgeCard(padding: 14) {
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text(title)
@@ -442,16 +457,16 @@ public struct FullDashboardView: View {
                     Image(systemName: symbol)
                         .font(.system(size: 11.5, weight: .semibold))
                         .foregroundStyle(accent ? palette.primaryForeground : palette.accentForeground)
-                        .frame(width: 24, height: 24)
+                        .frame(width: 26, height: 26)
                         .background(
-                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 .fill(accent ? palette.primary : palette.accent)
                         )
                 }
 
                 Text(value)
                     .nudgeMetricFont(size: 24, weight: .bold)
-                    .foregroundStyle(palette.foreground)
+                    .foregroundStyle(palette.cardForeground)
 
                 Text(detail)
                     .font(.system(size: 10.5, weight: .medium))

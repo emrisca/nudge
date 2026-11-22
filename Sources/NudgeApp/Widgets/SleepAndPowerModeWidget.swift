@@ -38,11 +38,12 @@ public struct SleepAndPowerModeWidget: View {
                             } label: {
                                 Text(mode.rawValue)
                                     .font(.system(size: 11, weight: isSelected ? .semibold : .medium))
+                                    .tracking(NudgeMetrics.tightTracking)
                                     .foregroundStyle(isSelected ? palette.primaryForeground : palette.foreground)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 6)
                                     .background(
-                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                        RoundedRectangle(cornerRadius: 9, style: .continuous)
                                             .fill(isSelected ? palette.primary : Color.clear)
                                     )
                             }
@@ -141,7 +142,7 @@ public struct SleepAndPowerModeWidget: View {
                                         .frame(width: 18, height: 18)
                                 }
                                 .buttonStyle(.plain)
-                                .background(RoundedRectangle(cornerRadius: 5).fill(palette.card))
+                                .background(RoundedRectangle(cornerRadius: 6, style: .continuous).fill(palette.card))
 
                                 Button {
                                     let next = min(50, config.keepAwakeFallbackPercent + 5)
@@ -152,13 +153,13 @@ public struct SleepAndPowerModeWidget: View {
                                         .frame(width: 18, height: 18)
                                 }
                                 .buttonStyle(.plain)
-                                .background(RoundedRectangle(cornerRadius: 5).fill(palette.card))
+                                .background(RoundedRectangle(cornerRadius: 6, style: .continuous).fill(palette.card))
                             }
                         }
                         .padding(.horizontal, 8)
                         .padding(.vertical, 5)
                         .background(
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
                                 .fill(palette.muted)
                         )
 

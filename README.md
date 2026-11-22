@@ -2,7 +2,47 @@
 
 A native macOS battery care, power telemetry, and charge management suite for Apple Silicon and Intel MacBooks, crafted in Swift, SwiftUI, Swift Charts, IOKit, and App Intents.
 
-Styled with the **Light Green** design system (tweakcn `cmlhfpjhw000004l4f4ax3m7z`): warm porcelain `#fbfcf8` / midnight slate `#020617` surfaces, signature `#aff33e` lime-green accents with crisp `#000000` foregrounds, `16pt` card geometry, hairline borders, tabular monospaced figures, and full Light / Dark / System mode support.
+Runs cleanly as a **menu-bar-only utility** (`LSUIElement = true`, hidden from the macOS Dock like Tailscale and Bitwarden) with a compact quick-control pill bar, expandable widget popover, and on-demand full dashboard window.
+
+Styled with the **Moss** design system ([tweakcn `cmmi1gb4a000204jl8c300w9a`](https://tweakcn.com/themes/cmmi1gb4a000204jl8c300w9a)): deep warm dark bark (`#070503` / `#100d08`) and crisp porcelain (`#fdfdfd`) surfaces, warm `#2f281b` hairline borders, `#495940` deep forest moss accents, sage-moss (`#AFBEA5` / `#7F956A`) controls, `1.4rem` organic corners, tabular monospaced figures, and full Light / Dark / System mode support.
+
+## Screenshots
+
+### Compact Menu Bar Popover (Dark & Light Moss)
+
+| Dark Moss | Light Moss |
+| :---: | :---: |
+| ![Compact Menu Bar Quick Bar — Dark Moss](docs/screenshots/menubar-compact-dark.png) | ![Compact Menu Bar Quick Bar — Light Moss](docs/screenshots/menubar-compact-light.png) |
+
+Click Nudge in the top macOS menu bar for instant one-click access to **Limit %**, **Discharge**, **Top Up**, the **2×2 Expand Grid**, a one-click **Exit** button, and the live **Charge Limit slider**.
+
+### Full Dashboard & Expanded Popover
+
+| Full Dashboard (Dark Moss) | Full Dashboard (Light Moss) |
+| :---: | :---: |
+| ![Full Dashboard — Dark Moss](docs/screenshots/dashboard-dark.png) | ![Full Dashboard — Light Moss](docs/screenshots/dashboard-light.png) |
+
+<details>
+<summary><strong>Expanded Menu Bar Popover (Dark Moss)</strong></summary>
+
+<p align="center">
+  <img src="docs/screenshots/popover-expanded-dark.png" alt="Expanded Menu Bar Popover — Dark Moss" width="460" />
+</p>
+
+</details>
+
+## Download & Install
+
+Grab the latest macOS installer from **[GitHub Releases](https://github.com/emrisca/nudge/releases/latest)**:
+
+- **`Nudge-1.0.0-macOS-arm64.dmg`** — Drag `Nudge.app` into `/Applications`
+- **`Nudge-1.0.0-macOS-arm64.zip`** — Portable archive
+
+> **First Launch (Ad-Hoc Signed Build):** This release is ad-hoc signed and not notarized with an Apple Developer license. After dragging `Nudge.app` to `/Applications`, clear the macOS Gatekeeper quarantine flag in Terminal:
+> ```bash
+> xattr -cr /Applications/Nudge.app
+> ```
+> Alternatively, bypass Gatekeeper via **Right-click → Open → Open**, or **System Settings → Privacy & Security → Open Anyway**.
 
 ## All 22 Core Features
 
@@ -24,7 +64,7 @@ Styled with the **Light Green** design system (tweakcn `cmlhfpjhw000004l4f4ax3m7
 16. **Hardware Battery Percentage** — Reads raw `AppleSmartBattery` hardware capacity alongside macOS’s smoothed display percentage.
 17. **Live Status Icons** — Dynamic menu bar icon reflecting real-time state (`Charging`, `Paused`, `Sailing`, `Discharging`, `Overheated`, `Calibrating`, `Unplugged`).
 18. **Menu Bar Customization** — User-reorderable modular menu bar items (Live Icon, macOS %, Hardware %, Temperature, Power Flow W, Cycles, Battery Health %).
-19. **Popover Customization** — Drag-and-drop reorderable & hideable SwiftUI widget dashboard + full resizable Sidebar Application window + Swift Charts historical graphs.
+19. **Popover Customization** — Compact quick bar + expandable drag-and-drop reorderable & hideable SwiftUI widget dashboard + full resizable Sidebar Application window + Swift Charts historical graphs.
 20. **Power Flow** — Real-time wattage flow visualization (Charger Input, Battery In/Out, System Load broken down by SoC, Display, and USB/Peripherals).
 21. **Apps Using Significant Energy** — Live `NSWorkspace` + `proc_pid_rusage` energy monitor with CPU %, estimated watts, memory, and safe `terminate()` controls.
 22. **Power Mode Control** — View and switch Low Power, Automatic, and High Power modes.
@@ -32,23 +72,23 @@ Styled with the **Light Green** design system (tweakcn `cmlhfpjhw000004l4f4ax3m7
 ## Project Structure
 
 - `Sources/NudgeCore/` — Hardware SMC bridge, IOKit `AppleSmartBattery` telemetry, Sailing Mode, Heat Protection, Calibration, Sleep Control, Scheduler, Energy Monitor, Power Mode, Telemetry History Store, XPC client, and `BatteryManager`.
-- `Sources/NudgeApp/` — Light Green themed SwiftUI Menu Bar Extra, drag-and-drop Popover Dashboard, Full Application Dashboard, Swift Charts, and Settings.
+- `Sources/NudgeApp/` — Moss themed SwiftUI Menu Bar Extra (`LSUIElement = true`, no Dock icon), compact quick bar, drag-and-drop Popover Dashboard, Full Application Dashboard, Swift Charts, and Settings.
 - `Sources/NudgeHelper/` — Privileged LaunchDaemon (`com.emrisca.nudge.helper`) with `NSXPCListener` and `<1%` idle CPU `DispatchSourceTimer`.
 - `Sources/NudgeIntents/` — 15 Apple Shortcuts `AppIntent` actions & `NudgeShortcutsProvider`.
 - `Sources/NudgeCLI/` — Full CLI (`status`, `limit`, `discharge`, `topup`, `calibrate`, `sailing`, `heat`, `magsafe`, `powermode`, `apps`, `keepawake`).
 - `Sources/NudgeTestRunner/` & `Tests/NudgeCoreTests/` — Automated verification suite.
-- `Resources/` & `scripts/build-app.sh` — App bundle metadata, LaunchDaemon plists, Light Green `AppIcon.icns`, and release packager.
+- `Resources/`, `scripts/build-app.sh`, `scripts/build-dmg.sh` — App bundle metadata (`LSUIElement = true`), LaunchDaemon plists, Moss `AppIcon.icns`, and headless ad-hoc `.dmg` / `.zip` release packager.
 
-## Build & Run
+## Build from Source
 
 ```bash
 # Run verification suite
 swift run nudge-test-runner
 
-# Build and package release Nudge.app
-./scripts/build-app.sh
+# Build release Nudge.app + DMG & ZIP installers (ad-hoc signed, no Apple Developer license required)
+./scripts/build-dmg.sh --build
 
-# Launch Nudge.app
+# Launch Nudge.app (runs in the macOS menu bar with no Dock icon)
 open build/Nudge.app
 
 # Use the CLI

@@ -25,13 +25,13 @@ public struct ChargeControlWidget: View {
                         HStack(alignment: .firstTextBaseline, spacing: 8) {
                             Text("\(snapshot.displayPercentage)%")
                                 .nudgeMetricFont(size: 40, weight: .bold)
-                                .foregroundStyle(palette.foreground)
+                                .foregroundStyle(palette.cardForeground)
 
                             if config.showHardwarePercentage {
                                 NudgeTagPill(
                                     String(format: "HW %.1f%%", snapshot.rawHardwarePercentage),
                                     symbol: "cpu",
-                                    style: .muted
+                                    style: .secondary
                                 )
                             }
                         }
@@ -39,7 +39,7 @@ public struct ChargeControlWidget: View {
                         HStack(spacing: 6) {
                             Image(systemName: snapshot.isPluggedIn ? "powerplug.fill" : "battery.75percent")
                                 .font(.system(size: 10.5, weight: .semibold))
-                                .foregroundStyle(snapshot.isPluggedIn ? palette.accentForeground : palette.mutedForeground)
+                                .foregroundStyle(snapshot.isPluggedIn ? palette.highlightText : palette.mutedForeground)
                             Text(statusSubtitle)
                                 .font(.system(size: 11.5, weight: .medium))
                                 .foregroundStyle(palette.mutedForeground)
@@ -72,7 +72,7 @@ public struct ChargeControlWidget: View {
                             )
                             .font(.system(size: 10.5, weight: .medium))
                             .monospacedDigit()
-                            .opacity(0.9)
+                            .opacity(0.92)
                         }
                         Spacer()
                     }
@@ -85,7 +85,7 @@ public struct ChargeControlWidget: View {
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                            .strokeBorder(palette.destructive.opacity(0.4), lineWidth: 1)
+                            .strokeBorder(palette.destructive.opacity(0.45), lineWidth: 1)
                     )
                 }
 
@@ -105,12 +105,12 @@ public struct ChargeControlWidget: View {
 
                         Text("\(Int(round(sliderLimit)))%")
                             .nudgeMetricFont(size: 14, weight: .bold)
-                            .foregroundStyle(palette.foreground)
+                            .foregroundStyle(palette.secondaryForeground)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 2)
                             .background(
-                                RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                    .fill(palette.muted)
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .fill(palette.secondary)
                             )
                     }
 
@@ -148,7 +148,7 @@ public struct ChargeControlWidget: View {
                             NudgePillToggleButtonStyle(
                                 isActive: config.manualDischargeActive,
                                 activeFill: palette.warning,
-                                activeForeground: .black
+                                activeForeground: Color(hex: 0x040302)
                             )
                         )
 

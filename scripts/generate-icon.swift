@@ -3,8 +3,10 @@ import AppKit
 import CoreGraphics
 import Foundation
 
-// MARK: - Nudge Light Green macOS App Icon Generator
-// Theme: #020617 deep slate squircle + glowing #aff33e geometric battery & lightning bolt emblem.
+// MARK: - Nudge Moss macOS App Icon Generator
+// Theme: Moss (tweakcn.com/themes/cmmi1gb4a000204jl8c300w9a)
+// Deep warm dark bark squircle (#070503 -> #100d08) with #2f281b border,
+// #495940 deep forest moss glow, and crisp sage-moss #AFBEA5 / #7F956A battery + lightning emblem.
 
 func color(hex: UInt32, alpha: CGFloat = 1.0) -> CGColor {
     let r = CGFloat((hex >> 16) & 0xFF) / 255.0
@@ -73,10 +75,10 @@ func renderIcon(pixelSize: Int) -> CGImage? {
     ctx.setShadow(
         offset: CGSize(width: 0, height: -size * 0.015),
         blur: size * 0.04,
-        color: CGColor(colorSpace: colorSpace, components: [0, 0, 0, 0.45])
+        color: CGColor(colorSpace: colorSpace, components: [0, 0, 0, 0.48])
     )
     ctx.addPath(bgPath)
-    ctx.setFillColor(color(hex: 0x020617))
+    ctx.setFillColor(color(hex: 0x070503))
     ctx.fillPath()
     ctx.restoreGState()
 
@@ -85,8 +87,8 @@ func renderIcon(pixelSize: Int) -> CGImage? {
     ctx.addPath(bgPath)
     ctx.clip()
 
-    // Deep slate vertical background gradient (#0b1226 -> #020617)
-    let bgGradientColors = [color(hex: 0x0f172a), color(hex: 0x020617)] as CFArray
+    // Deep warm dark bark vertical background gradient (#100d08 -> #070503)
+    let bgGradientColors = [color(hex: 0x100d08), color(hex: 0x070503)] as CFArray
     if let bgGradient = CGGradient(colorsSpace: colorSpace, colors: bgGradientColors, locations: [0.0, 1.0]) {
         ctx.drawLinearGradient(
             bgGradient,
@@ -96,8 +98,8 @@ func renderIcon(pixelSize: Int) -> CGImage? {
         )
     }
 
-    // Subtle top sheen
-    let sheenColors = [color(hex: 0xffffff, alpha: 0.07), color(hex: 0xffffff, alpha: 0.0)] as CFArray
+    // Subtle warm top sheen
+    let sheenColors = [color(hex: 0xAFBEA5, alpha: 0.06), color(hex: 0xAFBEA5, alpha: 0.0)] as CFArray
     if let sheenGradient = CGGradient(colorsSpace: colorSpace, colors: sheenColors, locations: [0.0, 1.0]) {
         ctx.drawLinearGradient(
             sheenGradient,
@@ -107,14 +109,14 @@ func renderIcon(pixelSize: Int) -> CGImage? {
         )
     }
 
-    // Ambient neon lime radial glow (#aff33e) behind the battery emblem
+    // Ambient deep forest moss radial glow (#495940) behind the battery emblem
     let glowCenter = CGPoint(x: iconRect.midX, y: iconRect.midY)
     let glowColors = [
-        color(hex: 0xaff33e, alpha: 0.24),
-        color(hex: 0xaff33e, alpha: 0.08),
-        color(hex: 0xaff33e, alpha: 0.0)
+        color(hex: 0x495940, alpha: 0.48),
+        color(hex: 0x495940, alpha: 0.18),
+        color(hex: 0x495940, alpha: 0.0)
     ] as CFArray
-    if let glowGradient = CGGradient(colorsSpace: colorSpace, colors: glowColors, locations: [0.0, 0.48, 1.0]) {
+    if let glowGradient = CGGradient(colorsSpace: colorSpace, colors: glowColors, locations: [0.0, 0.5, 1.0]) {
         ctx.drawRadialGradient(
             glowGradient,
             startCenter: glowCenter,
@@ -125,7 +127,7 @@ func renderIcon(pixelSize: Int) -> CGImage? {
         )
     }
 
-    // Subtle circular ring accent in deep lime-slate
+    // Subtle circular ring accent in forest moss
     let ringRadius = iconRect.width * 0.365
     let ringRect = CGRect(
         x: iconRect.midX - ringRadius,
@@ -133,7 +135,7 @@ func renderIcon(pixelSize: Int) -> CGImage? {
         width: ringRadius * 2,
         height: ringRadius * 2
     )
-    ctx.setStrokeColor(color(hex: 0xaff33e, alpha: 0.14))
+    ctx.setStrokeColor(color(hex: 0x7F956A, alpha: 0.20))
     ctx.setLineWidth(max(1.0, size * 0.006))
     ctx.strokeEllipse(in: ringRect)
 
@@ -146,11 +148,11 @@ func renderIcon(pixelSize: Int) -> CGImage? {
     let battCorner = battHeight * 0.24
     let battStroke = max(1.5, size * 0.026)
 
-    // Battery interior dark glass fill
+    // Battery interior dark bark glass fill
     let battPath = squirclePath(in: battRect, cornerRadius: battCorner)
     ctx.saveGState()
     ctx.addPath(battPath)
-    ctx.setFillColor(color(hex: 0x071122, alpha: 0.85))
+    ctx.setFillColor(color(hex: 0x0b0905, alpha: 0.88))
     ctx.fillPath()
     ctx.restoreGState()
 
@@ -169,8 +171,8 @@ func renderIcon(pixelSize: Int) -> CGImage? {
     ctx.addPath(fillPath)
     ctx.clip()
     let barColors = [
-        color(hex: 0xaff33e, alpha: 0.30),
-        color(hex: 0x7bc91e, alpha: 0.14)
+        color(hex: 0xAFBEA5, alpha: 0.32),
+        color(hex: 0x7F956A, alpha: 0.16)
     ] as CFArray
     if let barGradient = CGGradient(colorsSpace: colorSpace, colors: barColors, locations: [0.0, 1.0]) {
         ctx.drawLinearGradient(
@@ -182,15 +184,15 @@ func renderIcon(pixelSize: Int) -> CGImage? {
     }
     ctx.restoreGState()
 
-    // Crisp battery outer border with subtle green glow
+    // Crisp sage-moss battery outer border with deep forest moss glow
     ctx.saveGState()
     ctx.setShadow(
         offset: .zero,
         blur: size * 0.028,
-        color: color(hex: 0xaff33e, alpha: 0.55)
+        color: color(hex: 0x7F956A, alpha: 0.50)
     )
     ctx.addPath(battPath)
-    ctx.setStrokeColor(color(hex: 0xaff33e, alpha: 0.95))
+    ctx.setStrokeColor(color(hex: 0xAFBEA5, alpha: 0.96))
     ctx.setLineWidth(battStroke)
     ctx.strokePath()
     ctx.restoreGState()
@@ -209,14 +211,14 @@ func renderIcon(pixelSize: Int) -> CGImage? {
     ctx.setShadow(
         offset: .zero,
         blur: size * 0.02,
-        color: color(hex: 0xaff33e, alpha: 0.5)
+        color: color(hex: 0x7F956A, alpha: 0.45)
     )
     ctx.addPath(capPath)
-    ctx.setFillColor(color(hex: 0xaff33e, alpha: 0.95))
+    ctx.setFillColor(color(hex: 0xAFBEA5, alpha: 0.96))
     ctx.fillPath()
     ctx.restoreGState()
 
-    // 4. Crisp Geometric Glowing Lightning Bolt Emblem centered over the battery
+    // 4. Crisp Geometric Sage-Moss Lightning Bolt Emblem centered over the battery
     let cx = battRect.midX + size * 0.005
     let cy = battRect.midY
     let boltScale = iconRect.width * 0.44
@@ -239,28 +241,28 @@ func renderIcon(pixelSize: Int) -> CGImage? {
         boltPath.closeSubpath()
     }
 
-    // Dark cutout halo behind bolt so it punches cleanly through the battery border
+    // Dark bark cutout halo behind bolt so it punches cleanly through the battery border
     ctx.saveGState()
     ctx.addPath(boltPath)
-    ctx.setStrokeColor(color(hex: 0x020617, alpha: 0.92))
+    ctx.setStrokeColor(color(hex: 0x070503, alpha: 0.94))
     ctx.setLineWidth(max(1.5, size * 0.032))
     ctx.setLineJoin(.round)
     ctx.strokePath()
     ctx.restoreGState()
 
-    // Glowing luminous #aff33e lightning bolt fill
+    // Crisp sage-moss (#AFBEA5 -> #7F956A) lightning bolt fill with subtle moss glow
     ctx.saveGState()
     ctx.setShadow(
         offset: .zero,
-        blur: size * 0.045,
-        color: color(hex: 0xaff33e, alpha: 0.85)
+        blur: size * 0.042,
+        color: color(hex: 0x7F956A, alpha: 0.72)
     )
     ctx.addPath(boltPath)
     ctx.clip()
     let boltColors = [
-        color(hex: 0xd9ff80), // luminous highlight tip
-        color(hex: 0xaff33e), // signature Light Green
-        color(hex: 0x84cc16)  // rich lime base
+        color(hex: 0xD2DDD0), // crisp pale sage highlight tip
+        color(hex: 0xAFBEA5), // primary Moss sage
+        color(hex: 0x7F956A)  // deep organic moss base
     ] as CFArray
     if let boltGradient = CGGradient(colorsSpace: colorSpace, colors: boltColors, locations: [0.0, 0.45, 1.0]) {
         ctx.drawLinearGradient(
@@ -275,13 +277,13 @@ func renderIcon(pixelSize: Int) -> CGImage? {
     // Restore clip
     ctx.restoreGState()
 
-    // 5. Crisp inner rim border around squircle
+    // 5. Subtle warm bark rim border (#2f281b) around squircle
     let borderRect = iconRect.insetBy(dx: max(0.5, size * 0.004), dy: max(0.5, size * 0.004))
     let borderPath = squirclePath(in: borderRect, cornerRadius: cornerRadius - size * 0.004)
     ctx.saveGState()
     ctx.addPath(borderPath)
-    ctx.setStrokeColor(color(hex: 0xaff33e, alpha: 0.28))
-    ctx.setLineWidth(max(1.0, size * 0.008))
+    ctx.setStrokeColor(color(hex: 0x2f281b, alpha: 0.95))
+    ctx.setLineWidth(max(1.0, size * 0.010))
     ctx.strokePath()
     ctx.restoreGState()
 

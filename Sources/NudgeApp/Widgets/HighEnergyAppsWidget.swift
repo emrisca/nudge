@@ -47,7 +47,7 @@ public struct HighEnergyAppsWidget: View {
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
                             .fill(palette.accent)
                     )
                     .transition(.opacity.combined(with: .move(edge: .top)))
@@ -57,7 +57,7 @@ public struct HighEnergyAppsWidget: View {
                     HStack(spacing: 8) {
                         Image(systemName: "leaf.fill")
                             .font(.system(size: 13))
-                            .foregroundStyle(palette.accentForeground)
+                            .foregroundStyle(palette.highlightText)
                         Text("No high-energy apps detected right now.")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundStyle(palette.mutedForeground)
@@ -66,7 +66,7 @@ public struct HighEnergyAppsWidget: View {
                     .padding(10)
                     .background(
                         RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                            .fill(palette.muted.opacity(0.6))
+                            .fill(palette.muted.opacity(0.65))
                     )
                 } else {
                     ForEach(Array(sortedApps.prefix(maxVisibleCount))) { app in
@@ -151,7 +151,7 @@ public struct HighEnergyAppsWidget: View {
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
                         Capsule(style: .continuous)
-                            .fill(palette.muted)
+                            .fill(palette.input)
                         Capsule(style: .continuous)
                             .fill(barColor)
                             .frame(width: max(4, geo.size.width * normalizedScore))
@@ -169,11 +169,11 @@ public struct HighEnergyAppsWidget: View {
         .padding(.vertical, 8)
         .background(
             RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                .fill(palette.muted.opacity(0.55))
+                .fill(palette.muted.opacity(0.60))
         )
         .overlay(
             RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                .strokeBorder(isConfirming ? palette.destructive.opacity(0.5) : palette.border.opacity(0.6), lineWidth: 1)
+                .strokeBorder(isConfirming ? palette.destructive.opacity(0.55) : palette.border.opacity(0.70), lineWidth: 1)
         )
     }
 }

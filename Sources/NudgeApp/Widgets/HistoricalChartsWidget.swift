@@ -49,6 +49,26 @@ public struct HistoricalChartsWidget: View {
         return manager.history
     }
 
+    private var chargeSeriesColor: Color {
+        palette.isDark ? palette.chart3 : palette.chart1
+    }
+
+    private var temperatureSeriesColor: Color {
+        palette.warning
+    }
+
+    private var chargerPowerColor: Color {
+        palette.isDark ? palette.chart3 : palette.chart1
+    }
+
+    private var systemPowerColor: Color {
+        palette.chart4
+    }
+
+    private var batteryPowerColor: Color {
+        palette.primary
+    }
+
     public var body: some View {
         NudgeCard(
             title: "Historical Telemetry",
@@ -87,24 +107,25 @@ public struct HistoricalChartsWidget: View {
                 } label: {
                     Text(tab.rawValue)
                         .font(.system(size: 10.5, weight: isSelected ? .semibold : .medium))
+                        .tracking(NudgeMetrics.tightTracking)
                         .foregroundStyle(isSelected ? palette.primaryForeground : palette.mutedForeground)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
                         .background(
-                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 .fill(isSelected ? palette.primary : Color.clear)
                         )
                 }
                 .buttonStyle(.plain)
             }
         }
-        .padding(2.5)
+        .padding(3)
         .background(
-            RoundedRectangle(cornerRadius: 9, style: .continuous)
+            RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
                 .fill(palette.muted)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 9, style: .continuous)
+            RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
                 .strokeBorder(palette.border, lineWidth: 1)
         )
     }
@@ -119,7 +140,7 @@ public struct HistoricalChartsWidget: View {
                 .interpolationMethod(.catmullRom)
                 .foregroundStyle(
                     LinearGradient(
-                        colors: [palette.chart1.opacity(0.45), palette.chart1.opacity(0.02)],
+                        colors: [chargeSeriesColor.opacity(0.38), chargeSeriesColor.opacity(0.02)],
                         startPoint: .top,
                         endPoint: .bottom
                     )
@@ -131,18 +152,18 @@ public struct HistoricalChartsWidget: View {
                 )
                 .interpolationMethod(.catmullRom)
                 .lineStyle(StrokeStyle(lineWidth: 2.2, lineCap: .round))
-                .foregroundStyle(palette.chart1)
+                .foregroundStyle(chargeSeriesColor)
             }
 
             RuleMark(y: .value("Charge Limit", manager.config.chargeLimit))
                 .lineStyle(StrokeStyle(lineWidth: 1.2, dash: [4, 4]))
-                .foregroundStyle(palette.chart3)
+                .foregroundStyle(palette.primary)
                 .annotation(position: .top, alignment: .trailing) {
                     Text("Limit \(manager.config.chargeLimit)%")
                         .font(.system(size: 9.5, weight: .semibold))
                         .monospacedDigit()
                         .foregroundStyle(palette.accentForeground)
-                        .padding(.horizontal, 5)
+                        .padding(.horizontal, 6)
                         .padding(.vertical, 2)
                         .background(
                             Capsule().fill(palette.accent)
@@ -186,7 +207,7 @@ public struct HistoricalChartsWidget: View {
                 .interpolationMethod(.catmullRom)
                 .foregroundStyle(
                     LinearGradient(
-                        colors: [palette.chart3.opacity(0.38), palette.chart3.opacity(0.02)],
+                        colors: [temperatureSeriesColor.opacity(0.32), temperatureSeriesColor.opacity(0.02)],
                         startPoint: .top,
                         endPoint: .bottom
                     )
@@ -198,7 +219,7 @@ public struct HistoricalChartsWidget: View {
                 )
                 .interpolationMethod(.catmullRom)
                 .lineStyle(StrokeStyle(lineWidth: 2.2, lineCap: .round))
-                .foregroundStyle(palette.chart3)
+                .foregroundStyle(temperatureSeriesColor)
             }
 
             RuleMark(y: .value("Heat Limit", manager.config.heatThresholdCelsius))
@@ -209,7 +230,7 @@ public struct HistoricalChartsWidget: View {
                         .font(.system(size: 9.5, weight: .semibold))
                         .monospacedDigit()
                         .foregroundStyle(palette.destructiveForeground)
-                        .padding(.horizontal, 5)
+                        .padding(.horizontal, 6)
                         .padding(.vertical, 2)
                         .background(
                             Capsule().fill(palette.destructive)
@@ -254,7 +275,7 @@ public struct HistoricalChartsWidget: View {
                 )
                 .interpolationMethod(.catmullRom)
                 .lineStyle(StrokeStyle(lineWidth: 2))
-                .foregroundStyle(palette.chart1)
+                .foregroundStyle(chargerPowerColor)
 
                 LineMark(
                     x: .value("Time", point.timestamp),
@@ -263,7 +284,7 @@ public struct HistoricalChartsWidget: View {
                 )
                 .interpolationMethod(.catmullRom)
                 .lineStyle(StrokeStyle(lineWidth: 2))
-                .foregroundStyle(palette.isDark ? palette.chart2 : Color(hex: 0x3B82F6))
+                .foregroundStyle(systemPowerColor)
 
                 LineMark(
                     x: .value("Time", point.timestamp),
@@ -272,7 +293,7 @@ public struct HistoricalChartsWidget: View {
                 )
                 .interpolationMethod(.catmullRom)
                 .lineStyle(StrokeStyle(lineWidth: 1.8, dash: [3, 2]))
-                .foregroundStyle(palette.chart3)
+                .foregroundStyle(batteryPowerColor)
             }
         }
         .chartYAxis {
@@ -313,9 +334,9 @@ public struct HistoricalChartsWidget: View {
                 statChip(label: "Avg", value: String(format: "%.1f°C", avg))
                 statChip(label: "Peak", value: String(format: "%.1f°C", vals.max() ?? 0))
             case .power:
-                legendDot(label: "Charger", value: String(format: "%.1fW", manager.latestSnapshot.powerFlow.chargerInputWatts), color: palette.chart1)
-                legendDot(label: "System", value: String(format: "%.1fW", manager.latestSnapshot.powerFlow.systemLoadWatts), color: palette.isDark ? palette.chart2 : Color(hex: 0x3B82F6))
-                legendDot(label: "Battery", value: String(format: "%+.1fW", manager.latestSnapshot.powerFlow.batteryWatts), color: palette.chart3)
+                legendDot(label: "Charger", value: String(format: "%.1fW", manager.latestSnapshot.powerFlow.chargerInputWatts), color: chargerPowerColor)
+                legendDot(label: "System", value: String(format: "%.1fW", manager.latestSnapshot.powerFlow.systemLoadWatts), color: systemPowerColor)
+                legendDot(label: "Battery", value: String(format: "%+.1fW", manager.latestSnapshot.powerFlow.batteryWatts), color: batteryPowerColor)
             }
         }
     }
@@ -333,7 +354,7 @@ public struct HistoricalChartsWidget: View {
         .padding(.horizontal, 9)
         .padding(.vertical, 6)
         .background(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
+            RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
                 .fill(palette.muted)
         )
     }
@@ -351,10 +372,10 @@ public struct HistoricalChartsWidget: View {
                 .nudgeMetricFont(size: 10.5, weight: .semibold)
                 .foregroundStyle(palette.foreground)
         }
-        .padding(.horizontal, 7)
+        .padding(.horizontal, 8)
         .padding(.vertical, 6)
         .background(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
+            RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
                 .fill(palette.muted)
         )
     }

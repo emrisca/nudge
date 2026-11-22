@@ -6,12 +6,23 @@ public struct PopoverDashboardView: View {
     @Environment(\.nudgePalette) private var palette
     @Environment(\.openWindow) private var openWindow
     @ObservedObject var manager: BatteryManager
+    @ObservedObject var navigation: NudgeNavigationController
 
+    @State private var isExpanded: Bool
     @State private var isEditingLayout: Bool = false
     @State private var draggedWidget: PopoverWidgetKind? = nil
 
-    public init(manager: BatteryManager) {
+    @MainActor
+    public init(manager: BatteryManager, initialExpanded: Bool = false) {
         self.manager = manager
+        self.navigation = .shared
+        self._isExpanded = State(initialValue: initialExpanded)
+    }
+
+    public init(manager: BatteryManager, navigation: NudgeNavigationController, initialExpanded: Bool = false) {
+        self.manager = manager
+        self.navigation = navigation
+        self._isExpanded = State(initialValue: initialExpanded)
     }
 
     /// Complete normalized widget order containing all PopoverWidgetKind cases exactly once.
@@ -30,60 +41,82 @@ public struct PopoverDashboardView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            headerBar
+            // Always-visible sleek compact quick bar (default collapsed state)
+            CompactQuickBarView(manager: manager, isExpanded: $isExpanded)
 
-            NudgeSectionDivider()
+            // Expandable full Moss widget dashboard toggled by the far-right 2x2 grid button
+            if isExpanded {
+                NudgeSectionDivider()
 
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 12) {
-                    if isEditingLayout {
-                        editModePanel
-                    } else {
-                        if visibleWidgets.isEmpty {
-                            emptyWidgetsBanner
+                expandedToolbar
+
+                NudgeSectionDivider()
+
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: 12) {
+                        if isEditingLayout {
+                            editModePanel
                         } else {
-                            ForEach(visibleWidgets) { kind in
-                                widgetView(for: kind)
-                                    .draggable(kind.rawValue) {
-                                        dragPreview(for: kind)
-                                            .onAppear { draggedWidget = kind }
-                                    }
-                                    .dropDestination(for: String.self) { items, _ in
-                                        guard let raw = items.first,
-                                              let source = PopoverWidgetKind(rawValue: raw) else { return false }
-                                        moveWidget(source, before: kind)
-                                        draggedWidget = nil
-                                        return true
-                                    }
+                            if visibleWidgets.isEmpty {
+                                emptyWidgetsBanner
+                            } else {
+                                ForEach(visibleWidgets) { kind in
+                                    widgetView(for: kind)
+                                        .draggable(kind.rawValue) {
+                                            dragPreview(for: kind)
+                                                .onAppear { draggedWidget = kind }
+                                        }
+                                        .dropDestination(for: String.self) { items, _ in
+                                            guard let raw = items.first,
+                                                  let source = PopoverWidgetKind(rawValue: raw) else { return false }
+                                            moveWidget(source, before: kind)
+                                            draggedWidget = nil
+                                            return true
+                                        }
+                                }
                             }
                         }
                     }
+                    .padding(14)
                 }
-                .padding(14)
+                .frame(maxHeight: 540)
+
+                NudgeSectionDivider()
+
+                footerBar
             }
-            .frame(maxHeight: 620)
-
-            NudgeSectionDivider()
-
-            footerBar
         }
         .frame(width: NudgeMetrics.popoverWidth)
-        .background(palette.background)
+        .fixedSize(horizontal: false, vertical: !isExpanded)
+        .background(
+            ZStack {
+                Rectangle().fill(.ultraThinMaterial)
+                palette.popover.opacity(palette.isDark ? 0.84 : 0.88)
+            }
+        )
+        .clipShape(RoundedRectangle(cornerRadius: NudgeMetrics.cardRadius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: NudgeMetrics.cardRadius, style: .continuous)
+                .strokeBorder(
+                    palette.isDark ? Color.white.opacity(0.11) : palette.border,
+                    lineWidth: 1
+                )
+        )
+        .foregroundStyle(palette.popoverForeground)
+        .animation(.spring(response: 0.28, dampingFraction: 0.86), value: isExpanded)
     }
 
-    // MARK: - Header
+    // MARK: - Expanded Dashboard Toolbar
 
-    private var headerBar: some View {
+    private var expandedToolbar: some View {
         HStack(spacing: 8) {
-            NudgeBrandBadge(size: 26)
+            NudgeBrandBadge(size: 24)
 
-            VStack(alignment: .leading, spacing: 1) {
-                HStack(spacing: 6) {
-                    Text("Nudge")
-                        .nudgeHeadingFont(size: 14.5, weight: .bold)
-                        .foregroundStyle(palette.foreground)
-                    ChargingStateBadge(state: manager.latestSnapshot.state, compact: true)
-                }
+            HStack(spacing: 6) {
+                Text("Nudge")
+                    .nudgeHeadingFont(size: 13.5, weight: .bold)
+                    .foregroundStyle(palette.popoverForeground)
+                ChargingStateBadge(state: manager.latestSnapshot.state, compact: true)
             }
 
             Spacer(minLength: 4)
@@ -108,28 +141,18 @@ public struct PopoverDashboardView: View {
             .buttonStyle(NudgeIconButtonStyle(isActive: isEditingLayout))
             .help(isEditingLayout ? "Done Editing Layout" : "Customize Popover Widgets")
 
-            // Open Full Dashboard Window
+            // Open Full Dashboard Window (keeps .accessory policy / Dock hidden)
             Button {
-                openWindow(id: "dashboard")
-                NSApp.activate(ignoringOtherApps: true)
+                navigation.openDashboard(using: openWindow, section: .overview)
             } label: {
                 Image(systemName: "macwindow")
             }
             .buttonStyle(NudgeIconButtonStyle())
             .help("Open Full Dashboard")
-
-            // Quit App
-            Button {
-                NSApplication.shared.terminate(nil)
-            } label: {
-                Image(systemName: "power")
-            }
-            .buttonStyle(NudgeIconButtonStyle())
-            .help("Quit Nudge")
         }
         .padding(.horizontal, 14)
-        .padding(.vertical, 11)
-        .background(palette.card)
+        .padding(.vertical, 9)
+        .background(palette.card.opacity(0.75))
     }
 
     // MARK: - Edit Layout Mode
@@ -171,7 +194,7 @@ public struct PopoverDashboardView: View {
                             .foregroundStyle(isVisible ? palette.accentForeground : palette.mutedForeground)
                             .frame(width: 24, height: 24)
                             .background(
-                                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
                                     .fill(isVisible ? palette.accent : palette.muted)
                             )
 
@@ -215,7 +238,7 @@ public struct PopoverDashboardView: View {
                                 .foregroundStyle(isVisible ? palette.primaryForeground : palette.mutedForeground)
                                 .frame(width: 26, height: 24)
                                 .background(
-                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
                                         .fill(isVisible ? palette.primary : palette.muted)
                                 )
                         }
@@ -277,7 +300,7 @@ public struct PopoverDashboardView: View {
     private var footerBar: some View {
         HStack(spacing: 8) {
             Circle()
-                .fill(manager.daemonStatus.isConnected ? palette.chart3 : palette.warning)
+                .fill(manager.daemonStatus.isConnected ? palette.statusPositive : palette.warning)
                 .frame(width: 7, height: 7)
 
             Text(
@@ -292,6 +315,26 @@ public struct PopoverDashboardView: View {
             Spacer()
 
             Button {
+                navigation.openDashboard(using: openWindow, section: .settings)
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "gearshape.fill")
+                        .font(.system(size: 10, weight: .semibold))
+                    Text("Settings")
+                        .font(.system(size: 10.5, weight: .semibold))
+                }
+                .foregroundStyle(palette.secondaryForeground)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(palette.secondary)
+                )
+            }
+            .buttonStyle(.plain)
+            .help("Open Settings in Full Dashboard")
+
+            Button {
                 _ = manager.tick()
             } label: {
                 HStack(spacing: 4) {
@@ -304,7 +347,7 @@ public struct PopoverDashboardView: View {
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(
-                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
                         .fill(palette.muted)
                 )
             }
@@ -313,7 +356,7 @@ public struct PopoverDashboardView: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 9)
-        .background(palette.card)
+        .background(palette.card.opacity(0.75))
     }
 
     // MARK: - Widget Factory & Drag Helpers
@@ -351,7 +394,7 @@ public struct PopoverDashboardView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
+            RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
                 .fill(palette.primary)
         )
     }

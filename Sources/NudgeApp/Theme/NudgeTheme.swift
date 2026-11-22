@@ -50,7 +50,7 @@ public enum NudgeAppearance: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
-// MARK: - Light Green tweakcn Design System Palette
+// MARK: - Moss tweakcn Design System Palette
 
 public struct NudgePalette: Sendable {
     public let isDark: Bool
@@ -58,7 +58,9 @@ public struct NudgePalette: Sendable {
     public let background: Color
     public let foreground: Color
     public let card: Color
+    public let cardForeground: Color
     public let popover: Color
+    public let popoverForeground: Color
     public let primary: Color
     public let primaryForeground: Color
     public let secondary: Color
@@ -73,6 +75,15 @@ public struct NudgePalette: Sendable {
     public let input: Color
     public let ring: Color
 
+    public let sidebar: Color
+    public let sidebarForeground: Color
+    public let sidebarPrimary: Color
+    public let sidebarPrimaryForeground: Color
+    public let sidebarAccent: Color
+    public let sidebarAccentForeground: Color
+    public let sidebarBorder: Color
+    public let sidebarRing: Color
+
     public let chart1: Color
     public let chart2: Color
     public let chart3: Color
@@ -81,6 +92,8 @@ public struct NudgePalette: Sendable {
 
     public let warning: Color
     public let warningSoft: Color
+    public let statusPositive: Color
+    public let highlightText: Color
 
     public let shadowColor: Color
     public let shadowRadius: CGFloat
@@ -88,64 +101,88 @@ public struct NudgePalette: Sendable {
 
     public static let light = NudgePalette(
         isDark: false,
-        background: Color(hex: 0xFBFCF8),
-        foreground: Color(hex: 0x0F172A),
-        card: Color(hex: 0xFFFFFF),
-        popover: Color(hex: 0xFFFFFF),
-        primary: Color(hex: 0xAFF33E),
-        primaryForeground: Color(hex: 0x000000),
-        secondary: Color(hex: 0x334155),
-        secondaryForeground: Color(hex: 0xF8FAFC),
-        muted: Color(hex: 0xF1F5F9),
-        mutedForeground: Color(hex: 0x64748B),
-        accent: Color(hex: 0xF0FDF4),
-        accentForeground: Color(hex: 0x166534),
-        destructive: Color(hex: 0xEF4444),
+        background: Color(hex: 0xFDFDFD),
+        foreground: Color(hex: 0x000000),
+        card: Color(hex: 0xFDFDFD),
+        cardForeground: Color(hex: 0x000000),
+        popover: Color(hex: 0xFCFCFC),
+        popoverForeground: Color(hex: 0x000000),
+        primary: Color(hex: 0x7F956A),
+        primaryForeground: Color(hex: 0xFAFAF9),
+        secondary: Color(hex: 0xD4D9D0),
+        secondaryForeground: Color(hex: 0x080808),
+        muted: Color(hex: 0xF5F5F5),
+        mutedForeground: Color(hex: 0x878787),
+        accent: Color(hex: 0x495940),
+        accentForeground: Color(hex: 0xFFFFFF),
+        destructive: Color(hex: 0xB3191F),
         destructiveForeground: Color(hex: 0xFFFFFF),
-        border: Color(hex: 0xE2E8F0),
-        input: Color(hex: 0xE2E8F0),
-        ring: Color(hex: 0xAFF33E),
-        chart1: Color(hex: 0xAFF33E),
-        chart2: Color(hex: 0x334155),
-        chart3: Color(hex: 0x22C55E),
-        chart4: Color(hex: 0x64748B),
-        chart5: Color(hex: 0x94A3B8),
-        warning: Color(hex: 0xF59E0B),
+        border: Color(hex: 0xE7E7EE),
+        input: Color(hex: 0xEBEBEB),
+        ring: Color(hex: 0xAFBEA5),
+        sidebar: Color(hex: 0xF5F8FB),
+        sidebarForeground: Color(hex: 0x000000),
+        sidebarPrimary: Color(hex: 0x000000),
+        sidebarPrimaryForeground: Color(hex: 0xFFFFFF),
+        sidebarAccent: Color(hex: 0xE4EAE1),
+        sidebarAccentForeground: Color(hex: 0x000000),
+        sidebarBorder: Color(hex: 0xEBEBEB),
+        sidebarRing: Color(hex: 0xAFBEA5),
+        chart1: Color(hex: 0x5EA500),
+        chart2: Color(hex: 0xF29F9B),
+        chart3: Color(hex: 0xFFDA1A),
+        chart4: Color(hex: 0x0051BA),
+        chart5: Color(hex: 0xA6A09B),
+        warning: Color(hex: 0xC27803),
         warningSoft: Color(hex: 0xFEF3C7),
-        shadowColor: Color.black.opacity(0.05),
-        shadowRadius: 20,
-        shadowY: 8
+        statusPositive: Color(hex: 0x5EA500),
+        highlightText: Color(hex: 0x495940),
+        shadowColor: Color(hex: 0x000000, alpha: 0.16),
+        shadowRadius: 3,
+        shadowY: 2
     )
 
     public static let dark = NudgePalette(
         isDark: true,
-        background: Color(hex: 0x020617),
-        foreground: Color(hex: 0xF8FAFC),
-        card: Color(hex: 0x0F172A),
-        popover: Color(hex: 0x0F172A),
-        primary: Color(hex: 0xAFF33E),
-        primaryForeground: Color(hex: 0x000000),
-        secondary: Color(hex: 0x1E293B),
-        secondaryForeground: Color(hex: 0xF8FAFC),
-        muted: Color(hex: 0x1E293B),
-        mutedForeground: Color(hex: 0x94A3B8),
-        accent: Color(hex: 0x14532D),
-        accentForeground: Color(hex: 0xAFF33E),
-        destructive: Color(hex: 0x991B1B),
-        destructiveForeground: Color(hex: 0xFFFFFF),
-        border: Color(hex: 0x1E293B),
-        input: Color(hex: 0x1E293B),
-        ring: Color(hex: 0xAFF33E),
-        chart1: Color(hex: 0xAFF33E),
-        chart2: Color(hex: 0x3B82F6),
-        chart3: Color(hex: 0x22C55E),
-        chart4: Color(hex: 0xA855F7),
-        chart5: Color(hex: 0xF59E0B),
+        background: Color(hex: 0x070503),
+        foreground: Color(hex: 0xF9F8F7),
+        card: Color(hex: 0x100D08),
+        cardForeground: Color(hex: 0xF9F8F7),
+        popover: Color(hex: 0x0B0905),
+        popoverForeground: Color(hex: 0xF9F8F7),
+        primary: Color(hex: 0xAFBEA5),
+        primaryForeground: Color(hex: 0x040302),
+        secondary: Color(hex: 0x26211A),
+        secondaryForeground: Color(hex: 0xE7E4DF),
+        muted: Color(hex: 0x1E1A14),
+        mutedForeground: Color(hex: 0x928F8A),
+        accent: Color(hex: 0x495940),
+        accentForeground: Color(hex: 0xFFFFFF),
+        destructive: Color(hex: 0xB3191F),
+        destructiveForeground: Color(hex: 0xF9F8F7),
+        border: Color(hex: 0x2F281B),
+        input: Color(hex: 0x1A150E),
+        ring: Color(hex: 0xAFBEA5),
+        sidebar: Color(hex: 0x040302),
+        sidebarForeground: Color(hex: 0xF0EEEB),
+        sidebarPrimary: Color(hex: 0xAFBEA5),
+        sidebarPrimaryForeground: Color(hex: 0x040302),
+        sidebarAccent: Color(hex: 0x495940),
+        sidebarAccentForeground: Color(hex: 0xFFFFFF),
+        sidebarBorder: Color(hex: 0x272117),
+        sidebarRing: Color(hex: 0xAFBEA5),
+        chart1: Color(hex: 0x408A0F),
+        chart2: Color(hex: 0x59A626),
+        chart3: Color(hex: 0x73BD42),
+        chart4: Color(hex: 0xA9E382),
+        chart5: Color(hex: 0xAFBEA5),
         warning: Color(hex: 0xF59E0B),
-        warningSoft: Color(hex: 0x451A03),
-        shadowColor: Color.black.opacity(0.40),
-        shadowRadius: 25,
-        shadowY: 10
+        warningSoft: Color(hex: 0x2F220B),
+        statusPositive: Color(hex: 0x73BD42),
+        highlightText: Color(hex: 0xAFBEA5),
+        shadowColor: Color(hex: 0x000000, alpha: 0.35),
+        shadowRadius: 12,
+        shadowY: 2
     )
 
     public static func forScheme(_ scheme: ColorScheme) -> NudgePalette {
@@ -156,12 +193,12 @@ public struct NudgePalette: Sendable {
 // MARK: - Geometry & Typography Constants
 
 public enum NudgeMetrics {
-    public static let cardRadius: CGFloat = 16
-    public static let controlRadius: CGFloat = 10
+    public static let cardRadius: CGFloat = 20
+    public static let controlRadius: CGFloat = 12
     public static let pillRadius: CGFloat = 999
     public static let borderWidth: CGFloat = 1
-    public static let tightTracking: CGFloat = -0.2
-    public static let popoverWidth: CGFloat = 420
+    public static let tightTracking: CGFloat = -0.3
+    public static let popoverWidth: CGFloat = 444
 }
 
 // MARK: - Environment Key
@@ -235,7 +272,7 @@ public struct NudgePrimaryButtonStyle: ButtonStyle {
             .font(.system(size: compact ? 11.5 : 12.5, weight: .semibold))
             .tracking(NudgeMetrics.tightTracking)
             .foregroundStyle(palette.primaryForeground)
-            .padding(.horizontal, compact ? 10 : 14)
+            .padding(.horizontal, compact ? 11 : 14)
             .padding(.vertical, compact ? 6 : 8)
             .background(
                 RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
@@ -243,7 +280,7 @@ public struct NudgePrimaryButtonStyle: ButtonStyle {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                    .strokeBorder(Color.black.opacity(0.08), lineWidth: 1)
+                    .strokeBorder(palette.ring.opacity(0.4), lineWidth: 1)
             )
             .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
             .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
@@ -262,12 +299,12 @@ public struct NudgeSecondaryButtonStyle: ButtonStyle {
         configuration.label
             .font(.system(size: compact ? 11.5 : 12.5, weight: .medium))
             .tracking(NudgeMetrics.tightTracking)
-            .foregroundStyle(palette.foreground)
+            .foregroundStyle(palette.secondaryForeground)
             .padding(.horizontal, compact ? 10 : 12)
             .padding(.vertical, compact ? 6 : 8)
             .background(
                 RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                    .fill(configuration.isPressed ? palette.muted.opacity(0.8) : palette.muted)
+                    .fill(configuration.isPressed ? palette.secondary.opacity(0.8) : palette.secondary)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
@@ -293,7 +330,7 @@ public struct NudgePillToggleButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         let fill = isActive ? (activeFill ?? palette.primary) : palette.muted
         let fg = isActive ? (activeForeground ?? palette.primaryForeground) : palette.foreground
-        let stroke = isActive ? (activeFill ?? palette.primary).opacity(0.6) : palette.border
+        let stroke = isActive ? (activeFill ?? palette.ring).opacity(0.7) : palette.border
 
         return configuration.label
             .font(.system(size: 11.5, weight: isActive ? .semibold : .medium))
@@ -326,12 +363,13 @@ public struct NudgeDestructiveButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(size: compact ? 11 : 12.5, weight: .semibold))
+            .tracking(NudgeMetrics.tightTracking)
             .foregroundStyle(palette.destructiveForeground)
-            .padding(.horizontal, compact ? 8 : 12)
+            .padding(.horizontal, compact ? 9 : 12)
             .padding(.vertical, compact ? 5 : 7)
             .background(
                 RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                    .fill(palette.destructive.opacity(configuration.isPressed ? 0.8 : 1.0))
+                    .fill(palette.destructive.opacity(configuration.isPressed ? 0.82 : 1.0))
             )
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
@@ -352,16 +390,16 @@ public struct NudgeIconButtonStyle: ButtonStyle {
             .foregroundStyle(isActive ? palette.primaryForeground : palette.mutedForeground)
             .frame(width: 28, height: 28)
             .background(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                RoundedRectangle(cornerRadius: 9, style: .continuous)
                     .fill(
                         isActive
                             ? palette.primary
-                            : (configuration.isPressed ? palette.muted : Color.clear)
+                            : (configuration.isPressed ? palette.secondary : Color.clear)
                     )
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .strokeBorder(isActive ? palette.primary : palette.border.opacity(0.8), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                    .strokeBorder(isActive ? palette.ring : palette.border.opacity(0.85), lineWidth: 1)
             )
             .scaleEffect(configuration.isPressed ? 0.94 : 1.0)
             .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
@@ -384,20 +422,24 @@ public struct NudgeSwitchToggleStyle: ToggleStyle {
             } label: {
                 ZStack(alignment: configuration.isOn ? .trailing : .leading) {
                     Capsule(style: .continuous)
-                        .fill(configuration.isOn ? palette.primary : palette.muted)
+                        .fill(configuration.isOn ? palette.primary : palette.input)
                         .frame(width: 36, height: 20)
                         .overlay(
                             Capsule(style: .continuous)
                                 .strokeBorder(
-                                    configuration.isOn ? palette.primary.opacity(0.6) : palette.border,
+                                    configuration.isOn ? palette.ring.opacity(0.75) : palette.border,
                                     lineWidth: 1
                                 )
                         )
 
                     Circle()
-                        .fill(configuration.isOn ? palette.primaryForeground : palette.card)
+                        .fill(
+                            configuration.isOn
+                                ? palette.primaryForeground
+                                : (palette.isDark ? palette.secondaryForeground : palette.card)
+                        )
                         .frame(width: 14, height: 14)
-                        .shadow(color: Color.black.opacity(0.14), radius: 2, y: 1)
+                        .shadow(color: palette.shadowColor, radius: 2, y: 1)
                         .padding(3)
                 }
             }
@@ -441,13 +483,17 @@ public extension ChargingState {
         case .charging:
             return (palette.primary, palette.primaryForeground, palette.primaryForeground)
         case .sailing, .paused:
-            return (palette.accent, palette.accentForeground, palette.chart3)
+            return (palette.accent, palette.accentForeground, palette.ring)
         case .discharging:
-            return (palette.warningSoft, palette.isDark ? palette.warning : Color(hex: 0x92400E), palette.warning)
+            return (palette.warningSoft, palette.isDark ? palette.warning : Color(hex: 0x78350F), palette.warning)
         case .overheated:
-            return (palette.destructive.opacity(palette.isDark ? 0.85 : 0.14), palette.isDark ? palette.destructiveForeground : palette.destructive, palette.destructive)
+            return (
+                palette.destructive.opacity(palette.isDark ? 0.92 : 0.12),
+                palette.isDark ? palette.destructiveForeground : palette.destructive,
+                palette.isDark ? palette.destructiveForeground : palette.destructive
+            )
         case .calibrating:
-            return (palette.chart2.opacity(0.16), palette.isDark ? Color(hex: 0x93C5FD) : palette.secondary, palette.chart2)
+            return (palette.secondary, palette.secondaryForeground, palette.highlightText)
         case .unplugged, .unknown:
             return (palette.muted, palette.mutedForeground, palette.mutedForeground)
         }

@@ -15,7 +15,7 @@ public struct NudgeCard<HeaderTrailing: View, Content: View>: View {
         title: String? = nil,
         subtitle: String? = nil,
         symbol: String? = nil,
-        padding: CGFloat = 14,
+        padding: CGFloat = 15,
         @ViewBuilder headerTrailing: () -> HeaderTrailing = { EmptyView() },
         @ViewBuilder content: () -> Content
     ) {
@@ -30,14 +30,14 @@ public struct NudgeCard<HeaderTrailing: View, Content: View>: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             if title != nil || symbol != nil {
-                HStack(alignment: .center, spacing: 8) {
+                HStack(alignment: .center, spacing: 9) {
                     if let symbol {
                         Image(systemName: symbol)
                             .font(.system(size: 11.5, weight: .semibold))
                             .foregroundStyle(palette.accentForeground)
-                            .frame(width: 24, height: 24)
+                            .frame(width: 26, height: 26)
                             .background(
-                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
                                     .fill(palette.accent)
                             )
                     }
@@ -46,7 +46,7 @@ public struct NudgeCard<HeaderTrailing: View, Content: View>: View {
                         if let title {
                             Text(title)
                                 .nudgeHeadingFont(size: 13, weight: .semibold)
-                                .foregroundStyle(palette.foreground)
+                                .foregroundStyle(palette.cardForeground)
                         }
                         if let subtitle {
                             Text(subtitle)

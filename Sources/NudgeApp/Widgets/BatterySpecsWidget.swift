@@ -21,7 +21,7 @@ public struct BatterySpecsWidget: View {
                 NudgeTagPill(
                     snapshot.architecture.rawValue,
                     symbol: snapshot.architecture == .appleSilicon ? "applelogo" : "cpu",
-                    style: .muted
+                    style: .secondary
                 )
             }
         ) {
@@ -70,9 +70,9 @@ public struct BatterySpecsWidget: View {
 
                         ZStack(alignment: .leading) {
                             Capsule(style: .continuous)
-                                .fill(palette.muted)
+                                .fill(palette.input)
                             Capsule(style: .continuous)
-                                .fill(palette.chart3.opacity(0.28))
+                                .fill(palette.primary.opacity(0.30))
                                 .frame(width: max(4, geo.size.width * maxRatio))
                             Capsule(style: .continuous)
                                 .fill(palette.primary)
@@ -93,14 +93,14 @@ public struct BatterySpecsWidget: View {
                 .padding(10)
                 .background(
                     RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                        .fill(palette.muted.opacity(0.6))
+                        .fill(palette.muted.opacity(0.65))
                 )
 
                 // Privileged Daemon & Fast User Switching Status Strip
                 HStack(spacing: 6) {
                     HStack(spacing: 5) {
                         Circle()
-                            .fill(daemon.isConnected ? palette.chart3 : palette.warning)
+                            .fill(daemon.isConnected ? palette.statusPositive : palette.warning)
                             .frame(width: 7, height: 7)
                         Text(daemon.isConnected ? "Helper v\(daemon.version)" : "Helper Offline")
                             .font(.system(size: 10.5, weight: .semibold))
@@ -135,7 +135,7 @@ public struct BatterySpecsWidget: View {
             HStack(spacing: 4) {
                 Image(systemName: icon)
                     .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(highlight ? palette.accentForeground : palette.mutedForeground)
+                    .foregroundStyle(highlight ? palette.highlightText : palette.mutedForeground)
                 Text(label)
                     .font(.system(size: 10, weight: .medium))
                     .foregroundStyle(palette.mutedForeground)
@@ -156,7 +156,7 @@ public struct BatterySpecsWidget: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
-                .strokeBorder(palette.border.opacity(0.7), lineWidth: 1)
+                .strokeBorder(palette.border.opacity(0.75), lineWidth: 1)
         )
     }
 }
