@@ -4,7 +4,7 @@ import NudgeCore
 // MARK: - CLI Entry Point
 
 private struct NudgeCLI {
-    static let version = "1.0.0"
+    static let version = NudgeVersion.current
 
     static func main() {
         let args = Array(CommandLine.arguments.dropFirst())
@@ -50,6 +50,9 @@ private struct NudgeCLI {
 
         case "keepawake":
             runKeepAwake(args: rest)
+
+        case "update":
+            runUpdate(args: rest)
 
         case "help", "--help", "-h":
             printHelp()
@@ -353,6 +356,75 @@ private struct NudgeCLI {
         print("==================================================================")
     }
 
+    private static func runUpdate(args: [String]) {
+        let includePrereleases = args.contains("--prerelease") || args.contains("--pre")
+        let json = args.contains("--json") || args.contains("-j")
+
+        var finished = false
+        var exitCode: Int32 = 0
+
+        Task { @MainActor in
+            let updater = UpdateManager.shared
+            updater.includePrereleases = includePrereleases
+            let result = await updater.checkForUpdates(userInitiated: true)
+
+            switch result {
+            case .updateAvailable(let release):
+                if json {
+                    let payload: [String: Any] = [
+                        "currentVersion": updater.currentVersionString,
+                        "latestVersion": release.tagName,
+                        "updateAvailable": true,
+                        "releaseURL": release.htmlURL.absoluteString,
+                        "asset": release.preferredAsset()?.name ?? ""
+                    ]
+                    if let data = try? JSONSerialization.data(withJSONObject: payload, options: [.prettyPrinted]),
+                       let str = String(data: data, encoding: .utf8) {
+                        print(str)
+                    }
+                } else {
+                    print("Update available: Nudge \(release.displayVersion) (installed: v\(updater.currentVersionString))")
+                    print("Release URL: \(release.htmlURL.absoluteString)")
+                    if let asset = release.preferredAsset() {
+                        print("Asset:       \(asset.name)")
+                    }
+                    print("Open Nudge Settings -> Software Updates to install & relaunch.")
+                }
+
+            case .upToDate:
+                if json {
+                    let payload: [String: Any] = [
+                        "currentVersion": updater.currentVersionString,
+                        "latestVersion": updater.latestKnownRelease?.tagName ?? "v\(updater.currentVersionString)",
+                        "updateAvailable": false
+                    ]
+                    if let data = try? JSONSerialization.data(withJSONObject: payload, options: [.prettyPrinted]),
+                       let str = String(data: data, encoding: .utf8) {
+                        print(str)
+                    }
+                } else {
+                    print("Nudge v\(updater.currentVersionString) is up to date (GitHub: \(NudgeVersion.repositoryOwner)/\(NudgeVersion.repositoryName)).")
+                }
+
+            case .failed(let message):
+                fputs("Error checking updates: \(message)\n", stderr)
+                exitCode = 1
+
+            default:
+                break
+            }
+
+            finished = true
+        }
+
+        while !finished {
+            RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
+        }
+        if exitCode != 0 {
+            exit(exitCode)
+        }
+    }
+
     // MARK: - Utilities
 
     private static func padLeft(_ text: String, width: Int) -> String {
@@ -396,6 +468,7 @@ private struct NudgeCLI {
           powermode <low|normal|high>         Switch macOS Power Mode
           apps [--json]                       List apps currently using significant energy
           keepawake <minutes|on|off>          Prevent system sleep for a duration or disable
+          update [--prerelease] [--json]      Check GitHub Releases for a newer version of Nudge
           help                                Show this help text
         """)
     }

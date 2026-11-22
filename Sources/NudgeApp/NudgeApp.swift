@@ -110,6 +110,13 @@ final class NudgeAppDelegate: NSObject, NSApplicationDelegate {
             BatteryManager.shared.refreshHighEnergyApps()
         }
         NudgeShortcutsProvider.updateAppShortcutParameters()
+
+        Task { @MainActor in
+            UpdateManager.shared.onRequestAppTermination = {
+                NSApp.terminate(nil)
+            }
+            UpdateManager.shared.startBackgroundChecks()
+        }
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -119,6 +126,9 @@ final class NudgeAppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         BatteryManager.shared.stopMonitoring()
+        MainActor.assumeIsolated {
+            UpdateManager.shared.stopBackgroundChecks()
+        }
     }
 }
 

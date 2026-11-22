@@ -39,6 +39,7 @@ public struct FullDashboardView: View {
     @Environment(\.nudgePalette) private var palette
     @ObservedObject var manager: BatteryManager
     @ObservedObject var navigation: NudgeNavigationController
+    @ObservedObject private var updater = UpdateManager.shared
 
     @MainActor
     public init(manager: BatteryManager) {
@@ -166,8 +167,34 @@ public struct FullDashboardView: View {
 
             Spacer()
 
-            // Quick Theme Switcher in Sidebar Footer
+            // Quick Theme Switcher & Updater Indicator in Sidebar Footer
             VStack(alignment: .leading, spacing: 8) {
+                if updater.hasUnignoredUpdate, let release = updater.availableRelease {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.14)) {
+                            navigation.selectedSection = .settings
+                        }
+                    } label: {
+                        HStack(spacing: 7) {
+                            Image(systemName: "arrow.down.circle.fill")
+                                .font(.system(size: 12, weight: .semibold))
+                            Text("Update \(release.displayVersion)")
+                                .font(.system(size: 11.5, weight: .semibold))
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 9.5, weight: .bold))
+                        }
+                        .foregroundStyle(palette.primaryForeground)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 7)
+                        .background(
+                            RoundedRectangle(cornerRadius: NudgeMetrics.controlRadius, style: .continuous)
+                                .fill(palette.primary)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .help("Open Software Updates in Settings")
+                }
                 HStack(spacing: 4) {
                     ForEach(NudgeAppearance.allCases) { mode in
                         let isSelected = NudgeAppearance.from(manager.config.appearancePreference) == mode
@@ -206,7 +233,7 @@ public struct FullDashboardView: View {
                         .font(.system(size: 10.5, weight: .medium))
                         .foregroundStyle(palette.mutedForeground)
                     Spacer()
-                    Text(snapshot.architecture == .appleSilicon ? "ARM64" : "x86_64")
+                    Text("v\(updater.currentVersionString) · \(snapshot.architecture == .appleSilicon ? "ARM64" : "x86_64")")
                         .nudgeMetricFont(size: 10, weight: .semibold)
                         .foregroundStyle(palette.mutedForeground)
                 }

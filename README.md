@@ -35,8 +35,9 @@ Click Nudge in the top macOS menu bar for instant one-click access to **Limit %*
 
 Grab the latest macOS installer from **[GitHub Releases](https://github.com/emrisca/nudge/releases/latest)**:
 
-- **`Nudge-1.0.0-macOS-arm64.dmg`** — Drag `Nudge.app` into `/Applications`
-- **`Nudge-1.0.0-macOS-arm64.zip`** — Portable archive
+- **`Nudge-1.1.0-macOS-arm64.dmg`** — Drag `Nudge.app` into `/Applications`
+- **`Nudge-1.1.0-macOS-arm64.zip`** — Portable archive
+- **Built-in GitHub Releases Updater** — Nudge automatically checks `emrisca/nudge` for new releases (with optional pre-release channel, SHA-256 verification against `SHA256SUMS.txt`, automatic `xattr -cr`, and one-click **Install & Relaunch**).
 
 > **First Launch (Ad-Hoc Signed Build):** This release is ad-hoc signed and not notarized with an Apple Developer license. After dragging `Nudge.app` to `/Applications`, clear the macOS Gatekeeper quarantine flag in Terminal:
 > ```bash
@@ -68,6 +69,7 @@ Grab the latest macOS installer from **[GitHub Releases](https://github.com/emri
 20. **Power Flow** — Real-time wattage flow visualization (Charger Input, Battery In/Out, System Load broken down by SoC, Display, and USB/Peripherals).
 21. **Apps Using Significant Energy** — Live `NSWorkspace` + `proc_pid_rusage` energy monitor with CPU %, estimated watts, memory, and safe `terminate()` controls.
 22. **Power Mode Control** — View and switch Low Power, Automatic, and High Power modes.
+23. **GitHub Releases Auto-Updater** — Tracks `emrisca/nudge` GitHub Releases with background checks (Every 6h / Daily / Weekly), optional pre-releases, SHA-256 checksum verification, one-click Install & Relaunch, Skip Version, and `nudge-cli update`.
 
 ## Project Structure
 
@@ -75,7 +77,7 @@ Grab the latest macOS installer from **[GitHub Releases](https://github.com/emri
 - `Sources/NudgeApp/` — Moss themed SwiftUI Menu Bar Extra (`LSUIElement = true`, no Dock icon), compact quick bar, drag-and-drop Popover Dashboard, Full Application Dashboard, Swift Charts, and Settings.
 - `Sources/NudgeHelper/` — Privileged LaunchDaemon (`com.emrisca.nudge.helper`) with `NSXPCListener` and `<1%` idle CPU `DispatchSourceTimer`.
 - `Sources/NudgeIntents/` — 15 Apple Shortcuts `AppIntent` actions & `NudgeShortcutsProvider`.
-- `Sources/NudgeCLI/` — Full CLI (`status`, `limit`, `discharge`, `topup`, `calibrate`, `sailing`, `heat`, `magsafe`, `powermode`, `apps`, `keepawake`).
+- `Sources/NudgeCLI/` — Full CLI (`status`, `limit`, `discharge`, `topup`, `calibrate`, `sailing`, `heat`, `magsafe`, `powermode`, `apps`, `keepawake`, `update`).
 - `Sources/NudgeTestRunner/` & `Tests/NudgeCoreTests/` — Automated verification suite.
 - `Resources/`, `scripts/build-app.sh`, `scripts/build-dmg.sh` — App bundle metadata (`LSUIElement = true`), LaunchDaemon plists, Moss `AppIcon.icns`, and headless ad-hoc `.dmg` / `.zip` release packager.
 

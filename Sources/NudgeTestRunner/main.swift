@@ -610,6 +610,88 @@ runTest("10. NudgeIntents Type Instantiation Check") {
     try expect(!NudgeShortcutsProvider.appShortcuts.isEmpty, "NudgeShortcutsProvider must expose Siri/Shortcuts entries")
 }
 
+// 11. GitHub Updater SemVer & Asset Selection
+runTest("11. GitHub Updater SemVer & Asset Selection") {
+    guard let v100 = SemanticVersion(parsing: "v1.0.0"),
+          let v101 = SemanticVersion(parsing: "1.0.1"),
+          let v110 = SemanticVersion(parsing: "v1.1.0"),
+          let v110Beta1 = SemanticVersion(parsing: "v1.1.0-beta.1"),
+          let v110Beta2 = SemanticVersion(parsing: "v1.1.0-beta.2"),
+          let v1100 = SemanticVersion(parsing: "v1.10.0") else {
+        throw TestFailure(message: "Failed to parse valid semantic versions")
+    }
+
+    try expect(v100 < v101, "1.0.0 must be < 1.0.1")
+    try expect(v101 < v110Beta1, "1.0.1 must be < 1.1.0-beta.1")
+    try expect(v110Beta1 < v110Beta2, "1.1.0-beta.1 must be < 1.1.0-beta.2")
+    try expect(v110Beta2 < v110, "prerelease must be < stable release")
+    try expect(v110 < v1100, "1.1.0 must be < 1.10.0")
+    try expect(SemanticVersion(parsing: "not-a-version") == nil, "Invalid version string must return nil")
+
+    let sampleJSON = #"""
+    {
+      "id": 42,
+      "tag_name": "v1.2.0",
+      "name": "Nudge v1.2.0",
+      "body": "Adds GitHub auto-updater",
+      "html_url": "https://github.com/emrisca/nudge/releases/tag/v1.2.0",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-11-22T08:00:00Z",
+      "assets": [
+        {
+          "id": 1,
+          "name": "Nudge-1.2.0-macOS-arm64.dmg",
+          "size": 4100000,
+          "browser_download_url": "https://github.com/emrisca/nudge/releases/download/v1.2.0/Nudge-1.2.0-macOS-arm64.dmg"
+        },
+        {
+          "id": 2,
+          "name": "Nudge-1.2.0-macOS-arm64.zip",
+          "size": 2800000,
+          "browser_download_url": "https://github.com/emrisca/nudge/releases/download/v1.2.0/Nudge-1.2.0-macOS-arm64.zip"
+        },
+        {
+          "id": 3,
+          "name": "Nudge-1.2.0-macOS-x86_64.zip",
+          "size": 2900000,
+          "browser_download_url": "https://github.com/emrisca/nudge/releases/download/v1.2.0/Nudge-1.2.0-macOS-x86_64.zip"
+        },
+        {
+          "id": 4,
+          "name": "SHA256SUMS.txt",
+          "size": 256,
+          "browser_download_url": "https://github.com/emrisca/nudge/releases/download/v1.2.0/SHA256SUMS.txt"
+        }
+      ]
+    }
+    """#
+
+    let release = try UpdateManager.makeGitHubDecoder().decode(GitHubRelease.self, from: Data(sampleJSON.utf8))
+    try expectEqual(release.tagName, "v1.2.0", "Decoded release tagName")
+    try expectEqual(release.preferredAsset(forArchitecture: "arm64")?.name, "Nudge-1.2.0-macOS-arm64.zip", "arm64 prefers .zip")
+    try expectEqual(release.preferredAsset(forArchitecture: "x86_64")?.name, "Nudge-1.2.0-macOS-x86_64.zip", "x86_64 picks matching arch")
+    try expectEqual(release.checksumAsset?.name, "SHA256SUMS.txt", "Finds SHA256SUMS.txt asset")
+}
+
+// 12. ChecksumVerifier Parsing & SHA-256 Digest Calculation
+runTest("12. ChecksumVerifier Parsing & SHA-256 Verification") {
+    let tempFile = FileManager.default.temporaryDirectory.appendingPathComponent("nudge-sha-test-\(UUID().uuidString).bin")
+    defer { try? FileManager.default.removeItem(at: tempFile) }
+
+    try Data("hello nudge updater".utf8).write(to: tempFile)
+    let digest = try ChecksumVerifier.sha256Hex(forFileAt: tempFile)
+    try expectEqual(digest.count, 64, "SHA-256 hex digest must be 64 characters")
+
+    let sums = """
+    \(digest)  Nudge-1.2.0-macOS-arm64.zip
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa *Nudge-1.2.0-macOS-arm64.dmg
+    """
+    let parsed = ChecksumVerifier.parseChecksums(sums)
+    try expectEqual(parsed["Nudge-1.2.0-macOS-arm64.zip"], digest, "Parsed zip checksum must match")
+    try expectEqual(parsed["Nudge-1.2.0-macOS-arm64.dmg"], String(repeating: "a", count: 64), "Parsed dmg checksum with asterisk prefix")
+}
+
 // MARK: - Final Summary & Exit Code
 
 let passedCount = outcomes.filter(\.passed).count

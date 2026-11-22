@@ -7,6 +7,7 @@ import NudgeCore
 public struct CompactQuickBarView: View {
     @Environment(\.nudgePalette) private var palette
     @ObservedObject var manager: BatteryManager
+    @ObservedObject private var updater = UpdateManager.shared
     @Binding var isExpanded: Bool
 
     @State private var sliderLimit: Double = 80
@@ -227,12 +228,28 @@ public struct CompactQuickBarView: View {
                             lineWidth: 1
                         )
                 )
+                .overlay(alignment: .topTrailing) {
+                    if updater.hasUnignoredUpdate {
+                        Circle()
+                            .fill(palette.primary)
+                            .frame(width: 8, height: 8)
+                            .overlay(
+                                Circle()
+                                    .strokeBorder(palette.popover, lineWidth: 1.5)
+                            )
+                            .offset(x: -1, y: 1)
+                    }
+                }
         }
         .buttonStyle(QuickBarTactileButtonStyle())
         .onHover { hovering in
             hoveredControl = hovering ? .expand : (hoveredControl == .expand ? nil : hoveredControl)
         }
-        .help(isExpanded ? "Collapse Dashboard" : "Expand Widget Dashboard")
+        .help(
+            updater.hasUnignoredUpdate
+                ? "Expand Dashboard — Update \(updater.availableRelease?.displayVersion ?? "") available"
+                : (isExpanded ? "Collapse Dashboard" : "Expand Widget Dashboard")
+        )
         .accessibilityLabel(isExpanded ? "Collapse Dashboard" : "Expand Widget Dashboard")
     }
 

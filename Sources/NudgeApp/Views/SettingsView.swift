@@ -29,6 +29,9 @@ public struct SettingsView: View {
                 }
             }
 
+            // GitHub Releases Software Updater
+            UpdateSettingsCard(updater: .shared)
+
             // Privileged Helper Daemon (SMJobBless / LaunchDaemon)
             NudgeCard(
                 title: "Privileged Helper Daemon",

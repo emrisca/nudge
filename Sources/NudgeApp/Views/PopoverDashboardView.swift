@@ -7,6 +7,7 @@ public struct PopoverDashboardView: View {
     @Environment(\.openWindow) private var openWindow
     @ObservedObject var manager: BatteryManager
     @ObservedObject var navigation: NudgeNavigationController
+    @ObservedObject private var updater = UpdateManager.shared
 
     @State private var isExpanded: Bool
     @State private var isEditingLayout: Bool = false
@@ -54,6 +55,8 @@ public struct PopoverDashboardView: View {
 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 12) {
+                        PopoverUpdateBanner(updater: updater)
+
                         if isEditingLayout {
                             editModePanel
                         } else {
@@ -313,6 +316,27 @@ public struct PopoverDashboardView: View {
             .foregroundStyle(palette.mutedForeground)
 
             Spacer()
+
+            Button {
+                Task { await updater.checkForUpdates(userInitiated: true) }
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: updater.hasUnignoredUpdate ? "arrow.down.circle.fill" : "arrow.triangle.2.circlepath")
+                        .font(.system(size: 10, weight: .semibold))
+                    Text(updater.hasUnignoredUpdate ? (updater.availableRelease?.displayVersion ?? "Update") : "Updates")
+                        .font(.system(size: 10.5, weight: .semibold))
+                }
+                .foregroundStyle(updater.hasUnignoredUpdate ? palette.primaryForeground : palette.foreground)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(updater.hasUnignoredUpdate ? palette.primary : palette.muted)
+                )
+            }
+            .buttonStyle(.plain)
+            .disabled(updater.state.isBusy)
+            .help("Check GitHub for Nudge updates")
 
             Button {
                 navigation.openDashboard(using: openWindow, section: .settings)

@@ -459,4 +459,25 @@ final class NudgeCoreTests: XCTestCase {
         XCTAssertFalse(snapshot.powerFlow.batteryWatts.isNaN)
         XCTAssertFalse(snapshot.powerFlow.systemLoadWatts.isNaN)
     }
+
+    // MARK: - 10. GitHub Releases Updater SemVer & Checksums
+
+    func testUpdaterSemVerAndChecksumParsing() throws {
+        let v100 = try XCTUnwrap(SemanticVersion(parsing: "v1.0.0"))
+        let v110Beta = try XCTUnwrap(SemanticVersion(parsing: "v1.1.0-beta.1"))
+        let v110 = try XCTUnwrap(SemanticVersion(parsing: "1.1.0"))
+        let v1100 = try XCTUnwrap(SemanticVersion(parsing: "v1.10.0"))
+
+        XCTAssertLessThan(v100, v110Beta)
+        XCTAssertLessThan(v110Beta, v110)
+        XCTAssertLessThan(v110, v1100)
+        XCTAssertNil(SemanticVersion(parsing: "invalid"))
+
+        let tempFile = FileManager.default.temporaryDirectory.appendingPathComponent("nudge-xctest-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: tempFile) }
+        try Data("nudge-checksum".utf8).write(to: tempFile)
+        let hash = try ChecksumVerifier.sha256Hex(forFileAt: tempFile)
+        let parsed = ChecksumVerifier.parseChecksums("\(hash)  Nudge-1.1.0-macOS-arm64.zip\n")
+        XCTAssertEqual(parsed["Nudge-1.1.0-macOS-arm64.zip"], hash)
+    }
 }
