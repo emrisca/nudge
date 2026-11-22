@@ -2,7 +2,7 @@
 
 A native macOS battery care, power telemetry, and charge management suite for Apple Silicon and Intel MacBooks, crafted in Swift, SwiftUI, Swift Charts, IOKit, and App Intents.
 
-Runs cleanly as a **menu-bar-only utility** (`LSUIElement = true`, hidden from the macOS Dock like Tailscale and Bitwarden) with a compact quick-control pill bar, expandable widget popover, and on-demand full dashboard window.
+Runs cleanly as a **menu-bar-only utility** (`LSUIElement = true`, hidden from the macOS Dock) with a compact quick-control pill bar, expandable widget popover, and on-demand full dashboard window.
 
 Styled with the **Moss** design system ([tweakcn `cmmi1gb4a000204jl8c300w9a`](https://tweakcn.com/themes/cmmi1gb4a000204jl8c300w9a)): deep warm dark bark (`#070503` / `#100d08`) and crisp porcelain (`#fdfdfd`) surfaces, warm `#2f281b` hairline borders, `#495940` deep forest moss accents, sage-moss (`#AFBEA5` / `#7F956A`) controls, `1.4rem` organic corners, tabular monospaced figures, and full Light / Dark / System mode support.
 
