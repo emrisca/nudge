@@ -692,6 +692,44 @@ runTest("12. ChecksumVerifier Parsing & SHA-256 Verification") {
     try expectEqual(parsed["Nudge-1.2.0-macOS-arm64.dmg"], String(repeating: "a", count: 64), "Parsed dmg checksum with asterisk prefix")
 }
 
+// 13. LaunchAtLoginManager Enable, Plist Validation & Disable Cleanup
+runTest("13. LaunchAtLoginManager Enable, Plist Validation & Disable Cleanup") {
+    let tempAgentsDir = FileManager.default.temporaryDirectory
+        .appendingPathComponent("nudge-launch-agents-\(UUID().uuidString)", isDirectory: true)
+    let suiteName = "com.emrisca.nudge.test.launch.\(UUID().uuidString)"
+    let testDefaults = UserDefaults(suiteName: suiteName)!
+    defer {
+        try? FileManager.default.removeItem(at: tempAgentsDir)
+        testDefaults.removePersistentDomain(forName: suiteName)
+    }
+
+    let fakeBundle = URL(fileURLWithPath: "/Applications/Nudge.app")
+    let dict = LaunchAtLoginManager.buildLaunchAgentDictionary(appBundlePath: fakeBundle.path)
+    try expectEqual(dict["Label"] as? String, LaunchAtLoginManager.launchAgentLabel, "LaunchAgent label must match")
+    try expectEqual(dict["RunAtLoad"] as? Bool, true, "RunAtLoad must be true")
+    try expectEqual(dict["KeepAlive"] as? Bool, false, "KeepAlive must be false so Quit stays quit")
+    try expectEqual(dict["ProgramArguments"] as? [String], ["/usr/bin/open", "-g", "/Applications/Nudge.app"], "ProgramArguments must open Nudge.app quietly")
+
+    let plistURL = tempAgentsDir.appendingPathComponent("\(LaunchAtLoginManager.launchAgentLabel).plist")
+    let manager: LaunchAtLoginManager = MainActor.assumeIsolated {
+        LaunchAtLoginManager(
+            defaults: testDefaults,
+            launchAgentsDirectory: tempAgentsDir,
+            bundleURLProvider: { fakeBundle },
+            useSMAppService: false
+        )
+    }
+
+    let enabledStatus = MainActor.assumeIsolated { manager.setEnabled(true) }
+    try expectEqual(enabledStatus.isEnabled, true, "Launch at Login must be enabled")
+    try expectEqual(enabledStatus.backend, .launchAgent, "Fallback backend must be LaunchAgent")
+    try expect(FileManager.default.fileExists(atPath: plistURL.path), "LaunchAgent plist must be written")
+
+    let disabledStatus = MainActor.assumeIsolated { manager.setEnabled(false) }
+    try expectEqual(disabledStatus.isEnabled, false, "Launch at Login must be disabled")
+    try expect(!FileManager.default.fileExists(atPath: plistURL.path), "LaunchAgent plist must be removed on disable")
+}
+
 // MARK: - Final Summary & Exit Code
 
 let passedCount = outcomes.filter(\.passed).count

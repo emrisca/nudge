@@ -26,8 +26,8 @@ Click the Nudge icon in the top macOS menu bar for instant one-click access to *
 
 Grab the latest macOS installer from **[GitHub Releases](https://github.com/emrisca/nudge/releases/latest)**:
 
-- **`Nudge-1.1.1-macOS-arm64.dmg`** — Drag `Nudge.app` into `/Applications`
-- **`Nudge-1.1.1-macOS-arm64.zip`** — Portable archive
+- **`Nudge-1.1.2-macOS-arm64.dmg`** — Drag `Nudge.app` into `/Applications`
+- **`Nudge-1.1.2-macOS-arm64.zip`** — Portable archive
 - **Built-in GitHub Releases Updater** — Nudge automatically checks `emrisca/nudge` for new releases (with optional pre-release channel, SHA-256 verification against `SHA256SUMS.txt`, automatic `xattr -cr`, and one-click **Install & Relaunch**).
 
 > **First Launch (Ad-Hoc Signed Build):** This release is ad-hoc signed and not notarized with an Apple Developer license. After dragging `Nudge.app` to `/Applications`, clear the macOS Gatekeeper quarantine flag in Terminal:
@@ -61,6 +61,7 @@ Grab the latest macOS installer from **[GitHub Releases](https://github.com/emri
 21. **Apps Using Significant Energy** — Live `NSWorkspace` + `proc_pid_rusage` energy monitor with CPU %, estimated watts, memory, and safe `terminate()` controls.
 22. **Power Mode Control** — View and switch Low Power, Automatic, and High Power modes.
 23. **GitHub Releases Auto-Updater** — Tracks `emrisca/nudge` GitHub Releases with background checks (Every 6h / Daily / Weekly), optional pre-releases, SHA-256 checksum verification, one-click Install & Relaunch, Skip Version, and `nudge-cli update`.
+24. **Launch at Login** — Starts Nudge automatically in your macOS menu bar on sign-in (enabled by default, toggleable in Settings, using `SMAppService.mainApp` with automatic per-user LaunchAgent fallback).
 
 ## Project Structure
 

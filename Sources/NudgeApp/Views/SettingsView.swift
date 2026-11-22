@@ -6,6 +6,7 @@ import NudgeCore
 public struct SettingsView: View {
     @Environment(\.nudgePalette) private var palette
     @ObservedObject var manager: BatteryManager
+    @ObservedObject private var launchAtLogin = LaunchAtLoginManager.shared
 
     public init(manager: BatteryManager) {
         self.manager = manager
@@ -25,6 +26,50 @@ public struct SettingsView: View {
                 HStack(spacing: 10) {
                     ForEach(NudgeAppearance.allCases) { mode in
                         appearanceOptionCard(mode)
+                    }
+                }
+            }
+
+            // Startup & Launch at Login
+            NudgeCard(
+                title: "Startup",
+                subtitle: "Start Nudge automatically in your macOS menu bar when you sign in",
+                symbol: "power.circle.fill",
+                headerTrailing: {
+                    NudgeTagPill(
+                        launchAtLogin.status.isEnabled ? launchAtLogin.status.backend.rawValue : "Off",
+                        symbol: launchAtLogin.status.isEnabled ? "checkmark.circle.fill" : "pause.circle",
+                        style: launchAtLogin.status.isEnabled ? .accent : .muted
+                    )
+                }
+            ) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Toggle(
+                        isOn: Binding(
+                            get: { launchAtLogin.isEnabled },
+                            set: { launchAtLogin.setEnabled($0) }
+                        )
+                    ) {
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("Launch at Login")
+                                .font(.system(size: 12.5, weight: .medium))
+                            Text("Opens Nudge quietly in the menu bar (no Dock icon) at startup")
+                                .font(.system(size: 11))
+                                .foregroundStyle(palette.mutedForeground)
+                        }
+                    }
+                    .toggleStyle(NudgeSwitchToggleStyle())
+
+                    if let error = launchAtLogin.status.lastError, !error.isEmpty {
+                        Text(error)
+                            .font(.system(size: 11))
+                            .foregroundStyle(palette.destructive)
+                    } else if let path = launchAtLogin.status.targetBundlePath, launchAtLogin.status.isEnabled {
+                        Text("Registered via \(launchAtLogin.status.backend.rawValue) · \(path)")
+                            .font(.system(size: 10.5))
+                            .foregroundStyle(palette.mutedForeground)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
                     }
                 }
             }

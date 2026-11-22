@@ -480,4 +480,34 @@ final class NudgeCoreTests: XCTestCase {
         let parsed = ChecksumVerifier.parseChecksums("\(hash)  Nudge-1.1.0-macOS-arm64.zip\n")
         XCTAssertEqual(parsed["Nudge-1.1.0-macOS-arm64.zip"], hash)
     }
+
+    // MARK: - 11. Launch at Login Plist & Registration
+
+    @MainActor
+    func testLaunchAtLoginManagerToggle() {
+        let tempAgents = FileManager.default.temporaryDirectory
+            .appendingPathComponent("nudge-xctest-agents-\(UUID().uuidString)", isDirectory: true)
+        let suiteName = "com.emrisca.nudge.xctest.launch.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer {
+            try? FileManager.default.removeItem(at: tempAgents)
+            defaults.removePersistentDomain(forName: suiteName)
+        }
+
+        let manager = LaunchAtLoginManager(
+            defaults: defaults,
+            launchAgentsDirectory: tempAgents,
+            bundleURLProvider: { URL(fileURLWithPath: "/Applications/Nudge.app") },
+            useSMAppService: false
+        )
+
+        let onStatus = manager.setEnabled(true)
+        XCTAssertTrue(onStatus.isEnabled)
+        XCTAssertEqual(onStatus.backend, .launchAgent)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: manager.launchAgentPlistURL.path))
+
+        let offStatus = manager.setEnabled(false)
+        XCTAssertFalse(offStatus.isEnabled)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: manager.launchAgentPlistURL.path))
+    }
 }

@@ -112,6 +112,7 @@ final class NudgeAppDelegate: NSObject, NSApplicationDelegate {
         NudgeShortcutsProvider.updateAppShortcutParameters()
 
         Task { @MainActor in
+            LaunchAtLoginManager.shared.syncOnLaunch()
             UpdateManager.shared.onRequestAppTermination = {
                 NSApp.terminate(nil)
             }
